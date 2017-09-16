@@ -1,0 +1,20 @@
+json_file:
+    'videolib.json'
+
+scan_path:
+    '<video folder location>'
+    
+html_report:
+    '<where to store the html report>'
+
+recode_report:
+    '<where to store the recode report>'
+
+codec_override:
+    ['this_one', 'that_one']
+
+ignore_folders:
+    ['.', '..', '.DS_Store']
+
+video_extensions:
+    ['.avi', '.m4v', '.mkv', '.mp4', '.mpg', '.ts']
