@@ -7,7 +7,7 @@ require 'ruby-progressbar'
 require 'yaml'
 
 CONFIG_FILE = ENV['HOME'] + '/.videolib.yml'
-@config = YAML::load_file(CONFIG_FILE)
+@config = YAML.load_file(CONFIG_FILE)
 
 def exit_with_msg(m)
   puts("Error: #{m}")
@@ -66,7 +66,8 @@ def scan_path(path)
     @tv_shows << dir unless @config['ignore_folders'].include? dir
   end
   puts "Found #{@tv_shows.count} directories, starting episode scan..."
-  progressbar = ProgressBar.create(format: "Scanning '%t' |%b>%i| %c/%C", title: '...', starting_at: 0, total: @tv_shows.count)
+  progressbar = ProgressBar.create(format: "Scanning '%t' |%b>%i| %c/%C",
+                                   title: '...', starting_at: 0, total: @tv_shows.count)
   @tv_shows.each { |dir| scan_files(path, dir, progressbar) }
   progressbar.finish
 end
@@ -78,7 +79,8 @@ end
 
 def check_for_changes(removed)
   puts "There are #{@episodes.count} episodes from previous scans, searching for removed episodes..."
-  progressbar = ProgressBar.create(format: "Checking '%t' |%b>%i| %c/%C", title: '...', starting_at: 0, total: @episodes.count)
+  progressbar = ProgressBar.create(format: "Checking '%t' |%b>%i| %c/%C",
+                                   title: '...', starting_at: 0, total: @episodes.count)
   @episodes.each do |key, values|
     progressbar.title = values.first['show']
     progressbar.increment
@@ -140,8 +142,9 @@ def create_report
   @episodes.each do |key, value|
     show = value.first['show']
     if shows[show].nil?
-      shows[show] = ['show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0, 'x265_1080p' => 0, 'x265_720p' => 0,
-                     'x265_sd' => 0, 'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_720p' => 0, 'mpeg_sd' => 0]
+      shows[show] = ['show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
+                     'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
+                     'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_720p' => 0, 'mpeg_sd' => 0]
     end
     height = track_resolution(value.first['height'])
     size = value.first['size']
@@ -172,7 +175,8 @@ def create_report
     total_size += show_size
     total_x265 += value.first['x265_episodes']
     html_table += "<tr><td class='left'>#{key}</td><td>#{show_size}</td>
-    <td class='center'><progress max='#{value.first['episodes']}' value='#{value.first['x265_episodes']}'></progress></td>
+    <td class='center'><progress max='#{value.first['episodes']}'
+      value='#{value.first['x265_episodes']}'></progress></td>
     <td>#{value.first['episodes']}</td><td>#{episode_badge(value)}</td><td>#{value.first['x265_1080p']}</td>
     <td>#{value.first['x265_720p']}</td><td>#{value.first['x265_sd']}</td><td>#{value.first['x264_1080p']}</td>
     <td>#{value.first['x264_720p']}</td><td>#{value.first['x264_sd']}</td><td>#{value.first['mpeg_720p']}</td>
@@ -180,7 +184,8 @@ def create_report
   end
 
   x265_pct = ((total_x265.to_f * 100) / @episodes.count).round(2)
-  total_stats = "Scanned #{shows.count} shows with #{@episodes.count} episodes (#{total_x265} in x265 format - #{x265_pct}%). #{total_size / 1024} GB in total"
+  total_stats = "Scanned #{shows.count} shows with #{@episodes.count} episodes (#{total_x265} in x265 format "
+  total_stats += "- #{x265_pct}%). #{total_size / 1024} GB in total"
   puts "Finished full directory scan. #{total_stats}"
 
   File.open(@config['html_report'], 'w') do |f|
