@@ -1,2 +1,8 @@
-#IntelliJ
+# IntelliJ
 .idea/
+
+# Ruby
+Gemfile.lock
+
+# videolib
+videolib.json*
