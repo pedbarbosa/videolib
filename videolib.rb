@@ -99,11 +99,12 @@ def check_for_changes(removed)
 end
 
 def track_codec(i)
-  if i == 'HEVC'
+  case i
+  when 'HEVC'
     'x265'
-  elsif i == 'AVC'
+  when 'AVC'
     'x264'
-  elsif i == 'MPEG-4 Visual' || i == 'MPEG Video'
+  when /MPEG/
     'mpeg'
   else
     ''
