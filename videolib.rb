@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'erb'
+require 'fileutils'
 require 'json'
 require 'mediainfo'
 require 'ruby-progressbar'
@@ -28,6 +29,7 @@ def write_json(file)
   File.open(file + '.tmp', 'w') do |f|
     f.write(JSON.pretty_generate(@episodes))
   end
+  FileUtils.cp(file + '.tmp', file)
 end
 
 def scan_episode(show, name)
@@ -135,9 +137,9 @@ def episode_badge(i)
   end
 end
 
-def create_report
+def create_html_report
   html_table = ''
-  recode_report = '<table border=1>'
+  recode = []
 
   shows = {}
   @episodes.each do |key, value|
@@ -160,8 +162,7 @@ def create_report
       if codec == 'x265'
         shows[show].first['x265_episodes'] += 1
       else
-        recode_report += "<tr><td align=center>#{codec}</td><td align=center>#{height}</td>
-        <td align=right>#{size}</td><td>#{key}</td></tr>"
+        recode << [codec, height, size, key]
       end
     end
 
@@ -194,8 +195,38 @@ def create_report
     f.write(erb.result(binding))
   end
 
+  recode_list(recode) if @config['recode_report']
+end
+
+def copy_files(files_to_copy)
+  files_to_copy.each do |key|
+    diskspace = `df -m #{@config['recode_disk']}`.split(/\b/)[24].to_i
+    if diskspace > 5000
+      puts "Copying #{key} to #{@config['recode_cp_target']}..."
+      FileUtils.cp(key, @config['recode_cp_target'])
+    end
+  end
+end
+
+def recode_list(recode)
+  files_to_copy = []
+  recode_report = '<table border=1>'
+  recode.each do |codec, height, size, key|
+    file = File.basename(key)
+    recode_report += "<tr><td align=center>#{codec}</td><td align=center>#{height}</td>
+    <td align=right>#{size}</td><td>#{file}</td></tr>"
+    unless File.file?(@config['recode_cp_target'] + File.basename(key))
+      files_to_copy << key
+    end
+  end
+  recode_report += '</table>'
+
   File.open(@config['recode_report'], 'w') do |f|
     f.write(recode_report)
+  end
+
+  if !files_to_copy.empty? && @config['recode_cp_target']
+    copy_files(files_to_copy)
   end
 end
 
@@ -210,5 +241,5 @@ process_read
 # Scan directory for TV shows and episodes
 scan_path(@config['scan_path'])
 
-# Create report
-create_report
+# Create reports
+create_html_report
