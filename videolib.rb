@@ -201,9 +201,11 @@ end
 def copy_files(files_to_copy)
   files_to_copy.each do |key|
     diskspace = `df -m #{@config['recode_disk']}`.split(/\b/)[24].to_i
-    if diskspace > 5000
+    if diskspace > 10000
       puts "Copying #{key} to #{@config['recode_cp_target']}..."
       FileUtils.cp(key, @config['recode_cp_target'])
+    else
+      exit_with_msg("File copy stopped, #{@config['recode_disk']} is almost full.")
     end
   end
 end

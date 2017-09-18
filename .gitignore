@@ -5,3 +5,6 @@ videolib.iml
 # Ruby
 Gemfile.lock
 .ruby-version
+
+# videolib
+videolib.json*
