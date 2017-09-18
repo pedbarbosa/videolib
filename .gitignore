@@ -1,5 +1,6 @@
 # IntelliJ
 .idea/
+videolib.iml
 
 # Ruby
 Gemfile.lock
