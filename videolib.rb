@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'erb'
 require 'fileutils'
@@ -6,9 +7,6 @@ require 'json'
 require 'mediainfo'
 require 'ruby-progressbar'
 require 'yaml'
-
-CONFIG_FILE = ENV['HOME'] + '/.videolib.yml'
-@config = YAML.load_file(CONFIG_FILE)
 
 def exit_with_msg(m)
   puts("Error: #{m}")
@@ -201,7 +199,7 @@ end
 def copy_files(files_to_copy)
   files_to_copy.each do |key|
     diskspace = `df -m #{@config['recode_disk']}`.split(/\b/)[24].to_i
-    if diskspace > 10000
+    if diskspace > 10_000
       puts "Copying #{key} to #{@config['recode_cp_target']}..."
       FileUtils.cp(key, @config['recode_cp_target'])
     else
@@ -227,12 +225,16 @@ def recode_list(recode)
     f.write(recode_report)
   end
 
-  if !files_to_copy.empty? && @config['recode_cp_target']
-    copy_files(files_to_copy)
-  end
+  copy_files(files_to_copy) if !files_to_copy.empty? && @config['recode_cp_target']
 end
 
 ### Start of code execution
+CONFIG_FILE = ENV['HOME'] + '/.videolib.yml'
+if File.file?(CONFIG_FILE)
+  @config = YAML.load_file(CONFIG_FILE)
+else
+  exit_with_msg("Configuration file '#{CONFIG_FILE}' missing, please check template.")
+end
 
 # Read previous scans from JSON file
 read_json(@config['json_file'])
