@@ -111,15 +111,17 @@ def track_codec(i)
   end
 end
 
-def track_resolution(i)
-  if i >= 800
-    '1080p'
-  elsif i < 800 && i >= 640
-    '720p'
+def track_resolution(i, file)
+  if i.nil?
+    # TODO : This is occurring after an episode file has been updated
+    puts "> Couldn't process #{file} resolution, setting to 'SD'!"
+    'sd'
   elsif i < 640
     'sd'
-  else
-    ''
+  elsif i >= 640 && i < 800
+    '720p'
+  elsif i >= 800
+    '1080p'
   end
 end
 
@@ -140,14 +142,14 @@ def create_html_report
   recode = []
 
   shows = {}
-  @episodes.each do |key, value|
+  @episodes.each do |file, value|
     show = value.first['show']
     if shows[show].nil?
       shows[show] = ['show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
                      'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
                      'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_720p' => 0, 'mpeg_sd' => 0]
     end
-    height = track_resolution(value.first['height'])
+    height = track_resolution(value.first['height'], file)
     size = value.first['size']
 
     # Process shows that are marked with override
@@ -160,7 +162,7 @@ def create_html_report
       if codec == 'x265'
         shows[show].first['x265_episodes'] += 1
       else
-        recode << [codec, height, size, key]
+        recode << [file, codec, height, size]
       end
     end
 
@@ -170,11 +172,11 @@ def create_html_report
   end
 
   total_x265 = total_size = 0
-  shows.each do |key, value|
+  shows.sort.each do |show, value|
     show_size = value.first['show_size'] / 1024 / 1024
     total_size += show_size
     total_x265 += value.first['x265_episodes']
-    html_table += "<tr><td class='left'>#{key}</td><td>#{show_size}</td>
+    html_table += "<tr><td class='left'>#{show}</td><td>#{show_size}</td>
     <td class='center'><progress max='#{value.first['episodes']}'
       value='#{value.first['x265_episodes']}'></progress></td>
     <td>#{value.first['episodes']}</td><td>#{episode_badge(value)}</td><td>#{value.first['x265_1080p']}</td>
@@ -197,11 +199,11 @@ def create_html_report
 end
 
 def copy_files(files_to_copy)
-  files_to_copy.each do |key|
+  files_to_copy.each do |file|
     diskspace = `df -m #{@config['recode_disk']}`.split(/\b/)[24].to_i
     if diskspace > 10_000
-      puts "Copying #{key} to #{@config['recode_cp_target']}..."
-      FileUtils.cp(key, @config['recode_cp_target'])
+      puts "Copying #{file} to #{@config['recode_cp_target']}..."
+      FileUtils.cp(file, @config['recode_cp_target'])
     else
       exit_with_msg("File copy stopped, #{@config['recode_disk']} is almost full.")
     end
@@ -211,12 +213,12 @@ end
 def recode_list(recode)
   files_to_copy = []
   recode_report = '<table border=1>'
-  recode.each do |codec, height, size, key|
-    file = File.basename(key)
+  recode.sort.each do |file, codec, height, size|
+    file = File.basename(file)
     recode_report += "<tr><td align=center>#{codec}</td><td align=center>#{height}</td>
     <td align=right>#{size}</td><td>#{file}</td></tr>"
-    unless File.file?(@config['recode_cp_target'] + File.basename(key))
-      files_to_copy << key
+    unless File.file?(@config['recode_cp_target'] + File.basename(file))
+      files_to_copy << file
     end
   end
   recode_report += '</table>'
@@ -225,7 +227,7 @@ def recode_list(recode)
     f.write(recode_report)
   end
 
-  copy_files(files_to_copy) if !files_to_copy.empty? && @config['recode_cp_target']
+  copy_files(files_to_copy) if !files_to_copy.empty? && @config['recode_cp_target'] && File.directory?(@config['recode_cp_target'])
 end
 
 ### Start of code execution
