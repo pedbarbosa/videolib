@@ -68,7 +68,7 @@ def scan_path(path)
   puts "Found #{@tv_shows.count} directories, starting episode scan..."
   progressbar = ProgressBar.create(format: "Scanning '%t' |%b>%i| %c/%C",
                                    title: '...', starting_at: 0, total: @tv_shows.count)
-  @tv_shows.each { |dir| scan_files(path, dir, progressbar) }
+  @tv_shows.sort.each { |dir| scan_files(path, dir, progressbar) }
   progressbar.finish
 end
 
@@ -81,7 +81,7 @@ def check_for_changes(removed)
   puts "There are #{@episodes.count} episodes from previous scans, searching for removed episodes..."
   progressbar = ProgressBar.create(format: "Checking '%t' |%b>%i| %c/%C",
                                    title: '...', starting_at: 0, total: @episodes.count)
-  @episodes.each do |key, values|
+  @episodes.sort.each do |key, values|
     progressbar.title = values.first['show']
     progressbar.increment
     unless File.file?(key) && File.size(key) == values.first['size']
@@ -113,7 +113,7 @@ end
 
 def track_resolution(i, file)
   if i.nil?
-    # TODO : This is occurring after an episode file has been updated
+    # TODO : Provide proper exception handling for this and track_codec
     puts "> Couldn't process #{file} resolution, setting to 'SD'!"
     'sd'
   elsif i < 640
@@ -248,4 +248,5 @@ process_read
 scan_path(@config['scan_path'])
 
 # Create reports
+read_json(@config['json_file'])
 create_html_report
