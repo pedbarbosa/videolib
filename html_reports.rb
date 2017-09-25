@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'erb'
+require_relative 'utils'
 
 def track_codec(i)
   case i
@@ -42,6 +43,12 @@ def episode_badge(i)
   end
 end
 
+def new_show
+  ['show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
+   'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
+   'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_720p' => 0, 'mpeg_sd' => 0]
+end
+
 def create_html_report(episodes, config)
   html_table = ''
   recode = []
@@ -49,11 +56,7 @@ def create_html_report(episodes, config)
   shows = {}
   episodes.each do |file, value|
     show = value.first['show']
-    if shows[show].nil?
-      shows[show] = ['show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
-                     'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
-                     'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_720p' => 0, 'mpeg_sd' => 0]
-    end
+    shows[show] = new_show if shows[show].nil?
     height = track_resolution(value.first['height'], file)
     size = value.first['size']
 
@@ -95,10 +98,8 @@ def create_html_report(episodes, config)
   total_stats += "- #{x265_pct}%). #{total_size / 1024} GB in total"
   puts "Finished full directory scan. #{total_stats}"
 
-  File.open(config['html_report'], 'w') do |f|
-    erb = ERB.new(File.read('report.html.erb'))
-    f.write(erb.result(binding))
-  end
+  erb = ERB.new(File.read('report.html.erb'))
+  write_file(config['html_report'], erb.result(binding))
 
   recode_list(recode, config) if config['recode_report']
 end
