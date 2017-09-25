@@ -76,12 +76,8 @@ def check_for_changes(removed)
 end
 
 ### Start of code execution
-CONFIG_FILE = ENV['HOME'] + '/.videolib.yml'
-if File.file?(CONFIG_FILE)
-  @config = YAML.load_file(CONFIG_FILE)
-else
-  exit_with_msg("Configuration file '#{CONFIG_FILE}' missing, please check template.")
-end
+# Load configuration from YAML file
+@config = load_config(ENV['HOME'] + '/.videolib.yml')
 
 # Read previous scans from JSON file
 @episodes = read_json(@config['json_file'])
@@ -93,5 +89,6 @@ process_read
 scan_path(@config['scan_path'])
 
 # Create reports
+# TODO : Investigate error caused by removed episodes - 'read_json' below is a hack
 read_json(@config['json_file'])
 create_html_report(@episodes, @config)

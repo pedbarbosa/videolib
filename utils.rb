@@ -8,6 +8,11 @@ def exit_with_msg(message)
   exit 1
 end
 
+def load_config(file)
+  exit_with_msg("Configuration file '#{file}' missing, please check template.") unless File.file?(file)
+  YAML.load_file(file)
+end
+
 def read_json(file)
   if File.file?(file)
     File.open(file, 'r') do |f|
