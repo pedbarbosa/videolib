@@ -50,8 +50,8 @@ def scan_path(path)
 end
 
 def process_read
-  removed = []
-  check_for_changes(removed) unless @episodes.count.zero?
+  return if @episodes.count.zero?
+  check_for_changes(removed = [])
 end
 
 def check_for_changes(removed)
