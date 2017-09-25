@@ -77,7 +77,8 @@ end
 
 ### Start of code execution
 # Load configuration from YAML file
-@config = load_config(ENV['HOME'] + '/.videolib.yml')
+CONFIG_FILE = ENV['HOME'] + '/.videolib.yml'
+@config = load_config(CONFIG_FILE)
 
 # Read previous scans from JSON file
 @episodes = read_json(@config['json_file'])
