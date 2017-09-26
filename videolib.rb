@@ -24,7 +24,7 @@ end
 
 def process_files(path, dir, progressbar)
   update_json = false
-  progressbar.title = dir
+  progressbar.title = progressbar_title(dir)
   Dir.foreach(path + dir) do |file|
     if @config['video_extensions'].include? File.extname(file)
       name = path + dir + '/' + file
@@ -43,8 +43,8 @@ def scan_path(path)
     @tv_shows << dir unless @config['ignore_folders'].include? dir
   end
   puts "Found #{@tv_shows.count} directories, starting episode scan..."
-  progressbar = ProgressBar.create(format: "Scanning '%t' |%b>%i| %c/%C",
-                                   title: '...', starting_at: 0, total: @tv_shows.count)
+  progressbar = ProgressBar.create(format: 'Scanning %t |%b>%i| %c/%C',
+                                   title: '...                      ', starting_at: 0, total: @tv_shows.count)
   @tv_shows.sort.each { |dir| process_files(path, dir, progressbar) }
   progressbar.finish
 end
@@ -56,10 +56,10 @@ end
 
 def check_for_changes(removed)
   puts "There are #{@episodes.count} episodes from previous scans, searching for removed episodes..."
-  progressbar = ProgressBar.create(format: "Checking '%t' |%b>%i| %c/%C",
-                                   title: '...', starting_at: 0, total: @episodes.count)
+  progressbar = ProgressBar.create(format: 'Checking %t |%b>%i| %c/%C',
+                                   title: '...                      ', starting_at: 0, total: @episodes.count)
   @episodes.sort.each do |key, values|
-    progressbar.title = values.first['show']
+    progressbar.title = progressbar_title(values.first['show'])
     progressbar.increment
     unless File.file?(key) && File.size(key) == values.first['size']
       @episodes.delete(key)
@@ -91,5 +91,5 @@ scan_path(@config['scan_path'])
 
 # Create reports
 # TODO : Investigate error caused by removed episodes - 'read_json' below is a hack
-read_json(@config['json_file'])
+@episodes = read_json(@config['json_file'])
 create_html_report(@episodes, @config)

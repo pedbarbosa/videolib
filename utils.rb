@@ -46,3 +46,11 @@ def copy_files(files_to_copy, target, disk)
     end
   end
 end
+
+def progressbar_title(title)
+  if title.length > 19
+    format("'%-19.19s ...'", title)
+  else
+    format('%-25.25s', "'#{title}'")
+  end
+end
