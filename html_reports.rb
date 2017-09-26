@@ -118,6 +118,6 @@ def recode_list(recode, config)
   end
   recode_report += '</table>'
   write_file(config['recode_report'], recode_report)
-  return if !files_to_copy.empty? && File.directory?(config['recode_cp_target'])
+  return if files_to_copy.empty? || !File.directory?(config['recode_cp_target'])
   copy_files(files_to_copy, config['recode_cp_target'], config['recode_disk'])
 end
