@@ -70,7 +70,7 @@ def create_html_report(episodes, config)
       if codec == 'x265'
         shows[show].first['x265_episodes'] += 1
       else
-        recode << [file, codec, height, size] unless size < 1_000_000_000
+        recode << [file, show, codec, height, size] # unless size < 1_000_000_000
       end
     end
 
@@ -112,9 +112,11 @@ end
 def recode_list(recode, config)
   files_to_copy = []
   recode_report = '<table border=1>'
-  recode.sort.each do |file, codec, height, size|
-    recode_report += recode_report_line(codec, file, height, size)
-    files_to_copy << file unless File.file?(config['recode_cp_target'] + File.basename(file))
+  recode.sort.each do |file, show, codec, height, size|
+    unless config['copy_override'].include? show
+      recode_report += recode_report_line(codec, file, height, size)
+      files_to_copy << file unless File.file?(config['recode_cp_target'] + File.basename(file))
+    end
   end
   recode_report += '</table>'
   write_file(config['recode_report'], recode_report)
