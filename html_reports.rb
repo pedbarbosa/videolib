@@ -49,6 +49,22 @@ def new_show
    'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_720p' => 0, 'mpeg_sd' => 0]
 end
 
+def increment_counters(show, format, size)
+  show.first[format] += 1
+  show.first['episodes'] += 1
+  show.first['show_size'] += size
+end
+
+def report_row(show, show_size, value)
+  "<tr><td class='left'>#{show}</td><td>#{show_size}</td>
+    <td class='center'><progress max='#{value.first['episodes']}'
+      value='#{value.first['x265_episodes']}'></progress></td>
+    <td>#{value.first['episodes']}</td><td>#{episode_badge(value)}</td>
+    <td>#{value.first['x265_1080p']}</td><td>#{value.first['x265_720p']}</td><td>#{value.first['x265_sd']}</td>
+    <td>#{value.first['x264_1080p']}</td><td>#{value.first['x264_720p']}</td><td>#{value.first['x264_sd']}</td>
+    <td>#{value.first['mpeg_720p']}</td><td>#{value.first['mpeg_sd']}</td></tr>"
+end
+
 def create_html_report(episodes, config)
   html_table = ''
   recode = []
@@ -74,9 +90,7 @@ def create_html_report(episodes, config)
       end
     end
 
-    shows[show].first[format] += 1
-    shows[show].first['episodes'] += 1
-    shows[show].first['show_size'] += size
+    increment_counters(shows[show], format, size)
   end
 
   total_x265 = total_size = 0
@@ -84,13 +98,7 @@ def create_html_report(episodes, config)
     show_size = value.first['show_size'] / 1024 / 1024
     total_size += show_size
     total_x265 += value.first['x265_episodes']
-    html_table += "<tr><td class='left'>#{show}</td><td>#{show_size}</td>
-    <td class='center'><progress max='#{value.first['episodes']}'
-      value='#{value.first['x265_episodes']}'></progress></td>
-    <td>#{value.first['episodes']}</td><td>#{episode_badge(value)}</td><td>#{value.first['x265_1080p']}</td>
-    <td>#{value.first['x265_720p']}</td><td>#{value.first['x265_sd']}</td><td>#{value.first['x264_1080p']}</td>
-    <td>#{value.first['x264_720p']}</td><td>#{value.first['x264_sd']}</td><td>#{value.first['mpeg_720p']}</td>
-    <td>#{value.first['mpeg_sd']}</td></tr>"
+    html_table += report_row(show, show_size, value)
   end
 
   x265_pct = ((total_x265.to_f * 100) / episodes.count).round(2)
@@ -104,9 +112,9 @@ def create_html_report(episodes, config)
   recode_list(recode, config) if config['recode_report']
 end
 
-def recode_report_line(codec, file, height, size)
-  "<tr><td align=center>#{codec}</td><td align=center>#{height}</td>
-   <td align=right>#{size}</td><td>#{file}</td></tr>"
+def recode_row(codec, file, height, size)
+  erb = ERB.new(File.read('recode_row.html.erb'))
+  erb.result(binding)
 end
 
 def recode_list(recode, config)
@@ -114,7 +122,7 @@ def recode_list(recode, config)
   recode_report = '<table border=1>'
   recode.sort.each do |file, show, codec, height, size|
     unless config['copy_override'].include? show
-      recode_report += recode_report_line(codec, file, height, size)
+      recode_report += recode_row(codec, file, height, size)
       files_to_copy << file unless File.file?(config['recode_cp_target'] + File.basename(file))
     end
   end

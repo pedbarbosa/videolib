@@ -1,0 +1,19 @@
+# NOT IN USE YET
+
+<tr>
+  <td class='left'><%= show %></td>
+  <td><%= show_size %></td>
+  <td class='center'>
+    <progress max='#{value.first['episodes']}' value='#{value.first['x265_episodes']}'></progress>
+  </td>
+  <td>#{value.first['episodes']}</td>
+  <td>#{episode_badge(value)}</td>
+  <td>#{value.first['x265_1080p']}</td>
+  <td>#{value.first['x265_720p']}</td>
+  <td>#{value.first['x265_sd']}</td>
+  <td>#{value.first['x264_1080p']}</td>
+  <td>#{value.first['x264_720p']}</td>
+  <td>#{value.first['x264_sd']}</td>
+  <td>#{value.first['mpeg_720p']}</td>
+  <td>#{value.first['mpeg_sd']}</td>
+</tr>
