@@ -24,7 +24,6 @@ end
 
 def process_files(path, dir, progressbar)
   update_json = false
-  progressbar.title = progressbar_title(dir)
   Dir.foreach(path + dir) do |file|
     if @config['video_extensions'].include? File.extname(file)
       name = path + dir + '/' + file
@@ -32,7 +31,7 @@ def process_files(path, dir, progressbar)
     end
   end
   write_json(@config['json_file'], @episodes) if update_json
-  progressbar.increment
+  progressbar_update(progressbar, dir)
 end
 
 def scan_path(path)
@@ -43,36 +42,37 @@ def scan_path(path)
     @tv_shows << dir unless @config['ignore_folders'].include? dir
   end
   puts "Found #{@tv_shows.count} directories, starting episode scan..."
-  progressbar = ProgressBar.create(format: 'Scanning %t |%b>%i| %c/%C',
-                                   title: '...                      ', starting_at: 0, total: @tv_shows.count)
+  progressbar = progressbar_create('Scanning', @tv_shows.count)
   @tv_shows.sort.each { |dir| process_files(path, dir, progressbar) }
   progressbar.finish
 end
 
 def process_read
   return if @episodes.count.zero?
-  check_for_changes(removed = [])
+  puts "There are #{@episodes.count} episodes from previous scans, searching for removed episodes..."
+  check_for_changes
 end
 
-def check_for_changes(removed)
-  puts "There are #{@episodes.count} episodes from previous scans, searching for removed episodes..."
-  progressbar = ProgressBar.create(format: 'Checking %t |%b>%i| %c/%C',
-                                   title: '...                      ', starting_at: 0, total: @episodes.count)
+def process_removal(list)
+  if list.empty?
+    puts 'No changes to previously scanned episodes found.'
+  else
+    puts "Removed #{list.count} episodes, which have been deleted or changed since last scan."
+    write_json(@config['json_file'], @episodes)
+  end
+end
+
+def check_for_changes(removed = [])
+  progressbar = progressbar_create('Checking', @episodes.count)
   @episodes.sort.each do |key, values|
-    progressbar.title = progressbar_title(values.first['show'])
-    progressbar.increment
+    progressbar_update(progressbar, values.first['show'])
     unless File.file?(key) && File.size(key) == values.first['size']
       @episodes.delete(key)
       removed << key
     end
   end
   progressbar.finish
-  if removed.empty?
-    puts 'No changes to previously scanned episodes found.'
-  else
-    puts "Removed #{removed.count} episodes, which have been deleted or changed since last scan."
-    write_json(@config['json_file'], @episodes)
-  end
+  process_removal(removed)
 end
 
 ### Start of code execution
