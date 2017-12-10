@@ -15,7 +15,7 @@ CONFIG_FILE = ENV['HOME'] + '/.videolib.yml'
 @episodes = read_json(@config['json_file'])
 
 # Remove files that no longer exist or have been changed
-process_read
+process_read(@episodes)
 
 # Scan directory for TV shows and episodes
 scan_path(@config['scan_path'])
