@@ -4,7 +4,7 @@ require_relative '../lib/base'
 
 describe 'lib/base.rb test' do
   it "Test empty 'episodes' in 'process_read' function" do
-    expect(process_read([])).to eql nil
+    expect(process_read(nil, [])).to eql nil
   end
 
   # it 'Test scan_if_not_present' do
