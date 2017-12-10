@@ -33,9 +33,9 @@ def scan_path(path)
   progressbar.finish
 end
 
-def process_read
-  return if @episodes.count.zero?
-  puts "There are #{@episodes.count} episodes from previous scans, searching for removed episodes..."
+def process_read(episodes)
+  return if episodes.count.zero?
+  puts "There are #{episodes.count} episodes from previous scans, searching for removed episodes..."
   check_for_changes
 end
 
