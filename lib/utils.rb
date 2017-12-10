@@ -2,6 +2,7 @@
 
 require 'fileutils'
 require 'json'
+require 'yaml'
 
 def exit_with_msg(message)
   puts("Error: #{message}")
