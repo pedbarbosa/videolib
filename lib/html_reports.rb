@@ -65,7 +65,7 @@ def report_row(show, show_size, value)
     <td>#{value.first['mpeg_720p']}</td><td>#{value.first['mpeg_sd']}</td></tr>"
 end
 
-def create_html_report(episodes, config)
+def create_html_report(config, episodes)
   html_table = ''
   recode = []
 
