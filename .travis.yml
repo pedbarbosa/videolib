@@ -1,7 +1,9 @@
 language: ruby
 
-ruby:
-  - 2.4.2
+ruby: 2.4.2
 
 install:
+  - apt-get install mediainfo
   - bundle install
+
+sudo: required

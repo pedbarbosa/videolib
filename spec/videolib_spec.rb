@@ -3,7 +3,7 @@
 require_relative '../lib/mediainfo_wrapper'
 
 describe 'videolib.rb test' do
-  next if ENV['TRAVIS']
+  # next if ENV['TRAVIS']
   it 'Test sample file' do
     sample = '/tmp/big_buck_bunny_720p_1mb.mkv'
     sample_details = [{ show: 'Test', codec: 'MPEG-4 Visual', width: 1280, height: 720, size: 1_052_413 }]
