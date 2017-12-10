@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require 'ruby-progressbar'
-# require 'yaml'
+require_relative 'progressbar_wrapper'
 
 def scan_if_not_present(dir, name)
   return if @episodes[name]
