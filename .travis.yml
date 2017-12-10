@@ -4,5 +4,4 @@ ruby:
   - 2.4.2
 
 install:
-  - set
   - bundle install
