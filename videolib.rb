@@ -21,7 +21,6 @@ episodes = read_json(config['json_file'])
 process_read(config, episodes)
 
 # Scan directory for TV shows and episodes
-# scan_path(@config['scan_path'])
 scan_path(config, episodes)
 
 # Create reports
