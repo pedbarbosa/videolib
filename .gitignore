@@ -1,5 +1,6 @@
 # IntelliJ
 .idea/
+coverage/
 videolib.iml
 
 # videolib
