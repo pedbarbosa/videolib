@@ -1,3 +1,8 @@
-language: bash
+language: ruby
 
-script: rspec
+ruby:
+  - 2.4.2
+
+install:
+  - bundle install
+  - rspec
