@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../lib/mediainfo_wrapper'
-
 describe 'videolib.rb test' do
   it 'Test sample file' do
     sample = '/tmp/big_buck_bunny_720p_1mb.mkv'
@@ -10,6 +8,13 @@ describe 'videolib.rb test' do
       puts 'Downloading sample file ...'
       `wget -P /tmp http://www.sample-videos.com/video/mkv/720/big_buck_bunny_720p_1mb.mkv`
     end
-    expect(scan_episode('Test', sample)).to eql(sample_details)
+
+    require_relative '../lib/mediainfo_wrapper'
+    episode = scan_episode('Test', sample)
+    expect(episode).to eql(sample_details)
+
+    require_relative '../lib/html_reports'
+    expect(track_codec(episode.first[:codec])).to eql('mpeg')
+    expect(track_resolution(episode.first[:height], sample)).to eql('720p')
   end
 end
