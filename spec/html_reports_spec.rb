@@ -2,7 +2,7 @@
 
 require_relative '../lib/html_reports'
 
-describe 'lib/html_reports test' do
+describe 'lib/html_reports.rb test' do
   it 'Test track_codec output' do
     expect(track_codec('HEVC')).to eql('x265')
     expect(track_codec('AVC')).to eql('x264')
