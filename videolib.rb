@@ -1,20 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'mediainfo'
 require 'ruby-progressbar'
 require 'yaml'
-require_relative 'html_reports'
-require_relative 'utils'
-
-def scan_episode(show, name)
-  info = Mediainfo.new name
-  codec = info.video.format
-  width = info.video.width
-  height = info.video.height
-  size = File.size(name)
-  [show: show, codec: codec, width: width, height: height, size: size]
-end
+require_relative 'lib/html_reports'
+require_relative 'lib/mediainfo_wrapper'
+require_relative 'lib/utils'
 
 def scan_if_not_present(dir, name)
   return if @episodes[name]
