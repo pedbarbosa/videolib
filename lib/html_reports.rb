@@ -106,14 +106,14 @@ def create_html_report(config, episodes)
   total_stats += "- #{x265_pct}%). #{total_size / 1024} GB in total"
   puts "Finished full directory scan. #{total_stats}"
 
-  erb = ERB.new(File.read('report.html.erb'))
+  erb = ERB.new(File.read('templates/report.html.erb'))
   write_file(config['html_report'], erb.result(binding))
 
   recode_list(recode, config) if config['recode_report']
 end
 
 def recode_row(codec, file, height, size)
-  erb = ERB.new(File.read('recode_row.html.erb'))
+  erb = ERB.new(File.read('templates/recode_row.html.erb'))
   erb.result(binding)
 end
 
