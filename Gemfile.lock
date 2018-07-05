@@ -52,10 +52,10 @@ PLATFORMS
 DEPENDENCIES
   codecov
   json
-  mediainfo
+  mediainfo (= 0.7.2)
   rspec
   rubocop
   ruby-progressbar
 
 BUNDLED WITH
-   1.16.0
+   1.16.2

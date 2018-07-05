@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 gem 'codecov', require: false, group: :test
 gem 'json'
-gem 'mediainfo'
+gem 'mediainfo', '0.7.2'
 gem 'rspec'
 gem 'rubocop'
 gem 'ruby-progressbar'
