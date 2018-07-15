@@ -3,7 +3,7 @@ language: ruby
 rvm: 2.5.1
 
 install:
-  - sudo apt-get install mediainfo
+  - sudo apt-get install mediainfo=0.7.82-1
   - bundle install
 
 sudo: required
