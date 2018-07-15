@@ -14,7 +14,7 @@ describe 'videolib.rb test' do
     expect(episode).to eql(sample_details)
 
     require_relative '../lib/html_reports'
-    expect(track_codec(episode.first[:codec])).to eql('mpeg')
+    expect(codec_badge(episode.first[:codec])).to eql('mpeg')
     expect(track_resolution(episode.first[:height], sample)).to eql('720p')
   end
 end

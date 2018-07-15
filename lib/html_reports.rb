@@ -3,8 +3,8 @@
 require 'erb'
 require_relative 'utils'
 
-def track_codec(i)
-  case i
+def codec_badge(codec)
+  case codec
   when 'HEVC'
     'x265'
   when 'AVC'
@@ -16,27 +16,27 @@ def track_codec(i)
   end
 end
 
-def track_resolution(i, file)
-  if i.nil?
+def track_resolution(height, filename)
+  if height.nil?
     # TODO : Provide proper exception handling for this and track_codec
-    puts "> Couldn't process #{file} resolution, setting to 'SD'!"
+    puts "> Couldn't process #{filename} resolution, setting to 'SD'!"
     'sd'
-  elsif i < 640
+  elsif height < 640
     'sd'
-  elsif i >= 640 && i < 800
+  elsif height >= 640 && height < 800
     '720p'
-  elsif i >= 800
+  elsif height >= 800
     '1080p'
   end
 end
 
-def episode_badge(i)
-  case i.first['episodes']
-  when i.first['x265_1080p'] + i.first['x264_1080p']
+def episode_badge(show)
+  case show.first['episodes']
+  when show.first['x265_1080p'] + show.first['x264_1080p']
     '1080p'
-  when i.first['x265_720p'] + i.first['x264_720p'] + i.first['mpeg_720p']
+  when show.first['x265_720p'] + show.first['x264_720p'] + show.first['mpeg_720p']
     '720p'
-  when i.first['x265_sd'] + i.first['x264_sd'] + i.first['mpeg_sd']
+  when show.first['x265_sd'] + show.first['x264_sd'] + show.first['mpeg_sd']
     'SD'
   else
     'Mix'
@@ -81,7 +81,7 @@ def create_html_report(config, episodes)
       format = 'x265_' + height
       shows[show].first['x265_episodes'] += 1
     else
-      codec = track_codec(value.first['codec'])
+      codec = codec_badge(value.first['codec'])
       format = codec + '_' + height
       if codec == 'x265'
         shows[show].first['x265_episodes'] += 1

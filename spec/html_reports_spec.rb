@@ -4,10 +4,10 @@ require_relative '../lib/html_reports'
 
 describe 'lib/html_reports.rb test' do
   it 'Test track_codec output' do
-    expect(track_codec('HEVC')).to eql('x265')
-    expect(track_codec('AVC')).to eql('x264')
-    expect(track_codec('MPEG something')).to eql('mpeg')
-    expect(track_codec('something')).to eql('')
+    expect(codec_badge('HEVC')).to eql('x265')
+    expect(codec_badge('AVC')).to eql('x264')
+    expect(codec_badge('MPEG something')).to eql('mpeg')
+    expect(codec_badge('something')).to eql('')
   end
 
   it 'Test track_resolution output' do
@@ -27,9 +27,9 @@ describe 'lib/html_reports.rb test' do
   end
 end
 
-def episode_badge_test(a, b)
+def episode_badge_test(first, second)
   test = new_show
   test.first['episodes'] = 10
-  test.first[a] = test.first[b] = 5
+  test.first[first] = test.first[second] = 5
   episode_badge(test)
 end
