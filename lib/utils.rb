@@ -5,8 +5,7 @@ require 'json'
 require 'yaml'
 
 def exit_with_msg(message)
-  puts("Error: #{message}")
-  exit 1
+  abort("Error: #{message}")
 end
 
 def load_config(file)
