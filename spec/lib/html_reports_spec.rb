@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../lib/html_reports'
+require_relative '../../lib/html_reports'
 
 describe 'lib/html_reports.rb test' do
   it 'Test track_codec output' do
