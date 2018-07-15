@@ -3,7 +3,6 @@
 
 require_relative 'lib/base'
 require_relative 'lib/html_reports'
-require_relative 'lib/mediainfo_wrapper'
 require_relative 'lib/utils'
 
 ### Start of code execution

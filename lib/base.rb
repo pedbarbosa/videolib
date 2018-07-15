@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+require_relative 'mediainfo_wrapper'
 require_relative 'progressbar_wrapper'
 
 def scan_if_not_present(episodes, dir, name)
   return if episodes[name]
   episodes[name] = scan_episode(dir, name)
-  true
+  episodes[name].nil? ? false : true
 end
 
 def process_files(config, episodes, path, dir, progressbar)
