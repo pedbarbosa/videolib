@@ -5,6 +5,7 @@ require_relative 'progressbar_wrapper'
 
 def scan_if_not_present(episodes, dir, name)
   return if episodes[name]
+
   episodes[name] = scan_episode(dir, name)
   episodes[name].nil? ? false : true
 end
@@ -39,6 +40,7 @@ end
 
 def process_read(config, episodes)
   return if episodes.count.zero?
+
   puts "There are #{episodes.count} episodes from previous scans, searching for removed episodes..."
   check_for_changes(config, episodes)
 end
