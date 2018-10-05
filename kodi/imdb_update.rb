@@ -8,7 +8,7 @@ require 'open-uri'
 require_relative 'helpers/mysql2'
 
 def fetch_page(link)
-  @imdb_page = Nokogiri::HTML(open(link))
+  @imdb_page = Nokogiri::HTML(URI.parse(link).open)
 rescue OpenURI::HTTPError => e
   puts "ERROR: #{e} - #{link}"
   abort
@@ -24,13 +24,7 @@ end
 
 def imdb_votes
   @imdb_page.search('div.imdbRating').search('a').children[0].content.delete(',').to_i
-# rescue
-#   nil
 end
-
-# def year_from_date(date)
-#   date[0..3]
-# end
 
 def color_compare(old, new)
   return new.to_s if old == new
@@ -45,7 +39,7 @@ def title_id_badge(title)
 end
 
 def title_line(title, update)
-  puts "#{title_id_badge(title)} '#{title['title']} (#{title['premiered'][0..3]})' - " +
+  puts "#{title_id_badge(title)} '#{title['title']} (#{title['premiered'][0..3]})' - " \
        "#{title['rating']} ⭐ / #{title['votes']} ✓ #{update}"
 end
 
@@ -73,6 +67,7 @@ def process_title(title)
   title_mismatch_warn(title) if title['title'] != imdb_title
 end
 
+MAX_THREADS = 100
 MYSQL_CONFIG = {
   host: '192.168.2.2',
   username: 'kodi',
@@ -80,17 +75,15 @@ MYSQL_CONFIG = {
   database: 'MyVideos107'
 }.freeze
 
-counter = ENV['START'] ? ENV['START'].to_i : 0
+start = ENV['START'] ? ENV['START'].to_i : 0
 limit = ENV['LIMIT'] ? ENV['LIMIT'].to_i : 20
-mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id'\
-" from movie_view ORDER BY idMovie DESC LIMIT #{counter},#{limit};"
+mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id' \
+              " from movie_view ORDER BY idMovie DESC LIMIT #{start},#{limit};"
 
 mysql_client = MySQL2Helper.new(MYSQL_CONFIG)
 results = mysql_client.query(mysql_query)
 
 puts "Checking IMDB ratings for #{results.count} titles in Kodi"
-
-MAX_THREADS = 100
 
 results.each_slice(MAX_THREADS) do |slice|
   slice.each do |title|
