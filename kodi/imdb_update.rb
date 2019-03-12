@@ -72,7 +72,7 @@ MYSQL_CONFIG = {
   host: '192.168.2.2',
   username: 'kodi',
   password: 'kodi',
-  database: 'MyVideos107'
+  database: 'MyVideos116'
 }.freeze
 
 start = ENV['START'] ? ENV['START'].to_i : 0
