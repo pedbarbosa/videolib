@@ -37,6 +37,8 @@ end
 
 def copy_files(files_to_copy, target, disk)
   files_to_copy.each do |file|
+    next if File.exist?("#{target}/#{file}")
+
     diskspace = `df -m #{disk}`.split(/\b/)[24].to_i
     if diskspace > 10_000
       puts "Copying #{file} to #{target} ..."
