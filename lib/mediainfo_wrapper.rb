@@ -5,8 +5,8 @@ require 'mediainfo'
 def scan_episode(show, filename)
   return unless file_exists?(filename)
 
-  info = Mediainfo.new filename
-  codec = info.video.format
+  info = MediaInfo.from(filename)
+  codec = info.video.codecid
   width = info.video.width
   height = info.video.height
   size = File.size(filename)
