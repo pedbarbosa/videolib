@@ -1,7 +1,9 @@
 # IntelliJ
 .idea/
+*.iml
+
+# simplecov
 coverage/
-videolib.iml
 
 # videolib
 videolib.json*
