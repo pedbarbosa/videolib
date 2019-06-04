@@ -7,7 +7,11 @@ def codec_badge(codec)
   case codec
   when 'HEVC'
     'x265'
+  when 'V_MPEGH/ISO/HEVC'
+    'x265'
   when 'AVC'
+    'x264'
+  when 'V_MPEG4/ISO/AVC'
     'x264'
   when /MPEG/
     'mpeg'
