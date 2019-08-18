@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'erb'
-require_relative 'utils'
+require 'fileutils'
 
 def codec_badge(codec)
   case codec
@@ -139,4 +139,16 @@ def recode_list(recode, config)
   return if files_to_copy.empty? || !File.directory?(config['recode_cp_target'])
 
   copy_files(files_to_copy, config['recode_cp_target'], config['recode_disk'])
+end
+
+def copy_files(files_to_copy, target, disk)
+  files_to_copy.each do |file|
+    next if File.exist?("#{target}/#{file}")
+
+    diskspace = `df -m #{disk}`.split(/\b/)[24].to_i
+    raise "ERROR: File copy stopped, #{disk} is almost full." unless diskspace > 10_000
+
+    puts "Copying #{file} to #{target} ..."
+    FileUtils.cp(file, target)
+  end
 end
