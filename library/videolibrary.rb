@@ -3,8 +3,8 @@
 require 'yaml'
 require_relative 'json_utils'
 require_relative '../adapters/mediainfo'
+require_relative '../adapters/progressbar'
 require_relative '../lib/html_reports'
-require_relative '../lib/progressbar_wrapper'
 
 # Video Library
 class VideoLibrary
