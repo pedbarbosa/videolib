@@ -31,5 +31,5 @@ def episode_badge_test(first, second)
   test = new_show
   test.first['episodes'] = 10
   test.first[first] = test.first[second] = 5
-  episode_badge(test)
+  episode_badge(test.first)
 end
