@@ -22,16 +22,16 @@ class VideoLibrary
     puts "Found #{tv_shows.count} directories, starting episode scan..."
     progressbar = progressbar_create('Scanning', tv_shows.count)
     tv_shows.sort.each do |show|
+      progressbar_update(progressbar, show)
       Dir.foreach(@config['scan_path'] + show) do |file|
         next unless @config['video_extensions'].include? File.extname(file)
 
         file_path = @config['scan_path'] + show + '/' + file
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
       end
-      progressbar_update(progressbar, show)
     end
     progressbar.finish
-    write_json('videolib2.json', episodes)
+    write_json(@config['json_file'], episodes)
     puts "Wrote #{episodes.count} episodes back to cache."
 
     create_html_report(@config, episodes)
