@@ -63,19 +63,6 @@ rescue NoMethodError
   puts show.first
 end
 
-def report_row(show, show_size, name)
-  erb = ERB.new(File.read('templates/report_row.html.erb'))
-  erb.result(binding)
-
-  # "<tr><td class='left'>#{show}</td><td>#{show_size}</td>
-  #   <td class='center'><progress max='#{value.first['episodes']}'
-  #     value='#{value.first['x265_episodes']}'></progress></td>
-  #   <td>#{value.first['episodes']}</td><td>#{episode_badge(value)}</td>
-  #   <td>#{value.first['x265_1080p']}</td><td>#{value.first['x265_720p']}</td><td>#{value.first['x265_sd']}</td>
-  #   <td>#{value.first['x264_1080p']}</td><td>#{value.first['x264_720p']}</td><td>#{value.first['x264_sd']}</td>
-  #   <td>#{value.first['mpeg_720p']}</td><td>#{value.first['mpeg_sd']}</td></tr>"
-end
-
 def create_html_report(config, episodes)
   html_table = ''
   recode = []
@@ -121,6 +108,11 @@ def create_html_report(config, episodes)
   write_file(config['html_report'], erb.result(binding))
 
   recode_list(recode, config) if config['recode_report']
+end
+
+def report_row(show, show_size, name)
+  erb = ERB.new(File.read('templates/report_row.html.erb'))
+  erb.result(binding)
 end
 
 def recode_row(codec, file, height, size)
