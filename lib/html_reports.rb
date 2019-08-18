@@ -2,6 +2,7 @@
 
 require 'erb'
 require 'fileutils'
+require_relative '../lib/json_utils'
 
 def codec_badge(codec)
   case codec
@@ -16,7 +17,7 @@ def codec_badge(codec)
   when /MPEG/
     'mpeg'
   else
-    ''
+    raise InvalidCodec
   end
 end
 
@@ -58,12 +59,18 @@ def increment_counters(show, format, size)
   show.first[format] += 1
   show.first['episodes'] += 1
   show.first['show_size'] += size
-rescue NoMethodError
-  puts "Invalid format found: #{format}"
-  puts show.first
 end
 
-def create_html_report(config, episodes)
+def show_format(codec, height)
+  raise InvalidCodec if codec == ''
+
+  raise InvalidHeight if height == ''
+
+  codec + '_' + height
+end
+
+def create_html_report(config)
+  episodes = read_json(@config['json_file'])
   html_table = ''
   recode = []
 
@@ -80,7 +87,7 @@ def create_html_report(config, episodes)
       shows[show].first['x265_episodes'] += 1
     else
       codec = codec_badge(value.first['codec'])
-      format = codec + '_' + height
+      format = show_format(codec, height)
       if codec == 'x265'
         shows[show].first['x265_episodes'] += 1
       else
@@ -89,6 +96,8 @@ def create_html_report(config, episodes)
     end
 
     increment_counters(shows[show], format, size)
+  rescue InvalidCodec
+    puts "Invalid codec detected: #{value.first}"
   end
 
   total_x265 = total_size = 0
@@ -146,4 +155,10 @@ def copy_files(files_to_copy, target, disk)
     puts "Copying #{file} to #{target} ..."
     FileUtils.cp(file, target)
   end
+end
+
+class InvalidCodec < StandardError
+end
+
+class InvalidHeight < StandardError
 end

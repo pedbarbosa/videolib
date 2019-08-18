@@ -34,7 +34,7 @@ class VideoLibrary
     write_json(@config['json_file'], episodes)
     puts "Wrote #{episodes.count} episodes back to cache."
 
-    create_html_report(@config, episodes)
+    create_html_report(@config)
   end
 
   private
