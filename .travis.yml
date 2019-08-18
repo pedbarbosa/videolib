@@ -1,9 +1,11 @@
+dist: bionic
+
 language: ruby
 
 rvm: 2.6.3
 
 install:
-  - sudo apt-get install mediainfo
+  - sudo apt update && sudo apt install mediainfo
   - bundle install
 
 sudo: required

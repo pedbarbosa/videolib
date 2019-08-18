@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'erb'
-require_relative 'utils'
+require 'fileutils'
 
 def codec_badge(codec)
   case codec
@@ -35,12 +35,12 @@ def track_resolution(height, filename)
 end
 
 def episode_badge(show)
-  case show.first['episodes']
-  when show.first['x265_1080p'] + show.first['x264_1080p']
+  case show['episodes']
+  when show['x265_1080p'] + show['x264_1080p']
     '1080p'
-  when show.first['x265_720p'] + show.first['x264_720p'] + show.first['mpeg_720p']
+  when show['x265_720p'] + show['x264_720p'] + show['mpeg_720p']
     '720p'
-  when show.first['x265_sd'] + show.first['x264_sd'] + show.first['mpeg_sd']
+  when show['x265_sd'] + show['x264_sd'] + show['mpeg_sd']
     'SD'
   else
     'Mix'
@@ -61,16 +61,6 @@ def increment_counters(show, format, size)
 rescue NoMethodError
   puts "Invalid format found: #{format}"
   puts show.first
-end
-
-def report_row(show, show_size, value)
-  "<tr><td class='left'>#{show}</td><td>#{show_size}</td>
-    <td class='center'><progress max='#{value.first['episodes']}'
-      value='#{value.first['x265_episodes']}'></progress></td>
-    <td>#{value.first['episodes']}</td><td>#{episode_badge(value)}</td>
-    <td>#{value.first['x265_1080p']}</td><td>#{value.first['x265_720p']}</td><td>#{value.first['x265_sd']}</td>
-    <td>#{value.first['x264_1080p']}</td><td>#{value.first['x264_720p']}</td><td>#{value.first['x264_sd']}</td>
-    <td>#{value.first['mpeg_720p']}</td><td>#{value.first['mpeg_sd']}</td></tr>"
 end
 
 def create_html_report(config, episodes)
@@ -102,11 +92,11 @@ def create_html_report(config, episodes)
   end
 
   total_x265 = total_size = 0
-  shows.sort.each do |show, value|
-    show_size = value.first['show_size'] / 1024 / 1024
+  shows.sort.each do |show, name|
+    show_size = name.first['show_size'] / 1024 / 1024
     total_size += show_size
-    total_x265 += value.first['x265_episodes']
-    html_table += report_row(show, show_size, value)
+    total_x265 += name.first['x265_episodes']
+    html_table += report_row(show, show_size, name.first)
   end
 
   x265_pct = ((total_x265.to_f * 100) / episodes.count).round(2)
@@ -120,6 +110,11 @@ def create_html_report(config, episodes)
   recode_list(recode, config) if config['recode_report']
 end
 
+def report_row(show, show_size, name)
+  erb = ERB.new(File.read('templates/report_row.html.erb'))
+  erb.result(binding)
+end
+
 def recode_row(codec, file, height, size)
   erb = ERB.new(File.read('templates/recode_row.html.erb'))
   erb.result(binding)
@@ -131,7 +126,7 @@ def recode_list(recode, config)
   recode.sort.each do |file, show, codec, height, size|
     unless config['copy_override'].include? show
       recode_report += recode_row(codec, file, height, size)
-      files_to_copy << file unless File.file?(config['recode_cp_target'] + File.basename(file))
+      files_to_copy << file unless File.file?(config['recode_cp_target'] + File.basename(file.to_s))
     end
   end
   recode_report += '</table>'
@@ -139,4 +134,16 @@ def recode_list(recode, config)
   return if files_to_copy.empty? || !File.directory?(config['recode_cp_target'])
 
   copy_files(files_to_copy, config['recode_cp_target'], config['recode_disk'])
+end
+
+def copy_files(files_to_copy, target, disk)
+  files_to_copy.each do |file|
+    next if File.exist?("#{target}/#{file}")
+
+    diskspace = `df -m #{disk}`.split(/\b/)[24].to_i
+    raise "ERROR: File copy stopped, #{disk} is almost full." unless diskspace > 10_000
+
+    puts "Copying #{file} to #{target} ..."
+    FileUtils.cp(file, target)
+  end
 end
