@@ -10,16 +10,14 @@ require_relative '../lib/html_reports'
 class VideoLibrary
   def initialize(**params)
     @config_file = params[:config_file] || ENV['HOME'] + '/.videolib.yml'
-    @use_cache = params[:cache] || true
     @config = load_configuration
+    @cache = File.file?(@config['json_file']) ? read_json(@config['json_file']) : {}
+    puts "Retrieved #{@cache.count} episodes from cache."
     validate_path(@config['scan_path'])
   end
 
   def scan
     episodes = {}
-    cached_episodes = @use_cache ? read_json(@config['json_file']) : {}
-    puts "Retrieved #{cached_episodes.count} episodes from cache."
-
     tv_shows = scan_tv_shows
     puts "Found #{tv_shows.count} directories, starting episode scan..."
     progressbar = progressbar_create('Scanning', tv_shows.count)
@@ -28,11 +26,7 @@ class VideoLibrary
         next unless @config['video_extensions'].include? File.extname(file)
 
         file_path = @config['scan_path'] + show + '/' + file
-        if cached_episodes[file_path] && File.size(file_path) == cached_episodes[file_path].first['size']
-          episodes[file_path.to_sym] = cached_episodes[file_path]
-        else
-          episodes[file_path.to_sym] = scan_media_file(file_path, show)
-        end
+        episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
       end
       progressbar_update(progressbar, show)
     end
@@ -44,6 +38,14 @@ class VideoLibrary
   end
 
   private
+
+  def scan_media_if_new_or_changed(file_path, show)
+    if @cache[file_path] && File.size(file_path) == @cache[file_path].first['size']
+      @cache[file_path]
+    else
+      scan_media_file(file_path, show)
+    end
+  end
 
   def scan_media_file(file_path, show)
     media = scan_with_symlink(file_path)

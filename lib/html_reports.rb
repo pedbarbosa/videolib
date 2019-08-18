@@ -35,12 +35,12 @@ def track_resolution(height, filename)
 end
 
 def episode_badge(show)
-  case show.first['episodes']
-  when show.first['x265_1080p'] + show.first['x264_1080p']
+  case show['episodes']
+  when show['x265_1080p'] + show['x264_1080p']
     '1080p'
-  when show.first['x265_720p'] + show.first['x264_720p'] + show.first['mpeg_720p']
+  when show['x265_720p'] + show['x264_720p'] + show['mpeg_720p']
     '720p'
-  when show.first['x265_sd'] + show.first['x264_sd'] + show.first['mpeg_sd']
+  when show['x265_sd'] + show['x264_sd'] + show['mpeg_sd']
     'SD'
   else
     'Mix'
@@ -63,14 +63,17 @@ rescue NoMethodError
   puts show.first
 end
 
-def report_row(show, show_size, value)
-  "<tr><td class='left'>#{show}</td><td>#{show_size}</td>
-    <td class='center'><progress max='#{value.first['episodes']}'
-      value='#{value.first['x265_episodes']}'></progress></td>
-    <td>#{value.first['episodes']}</td><td>#{episode_badge(value)}</td>
-    <td>#{value.first['x265_1080p']}</td><td>#{value.first['x265_720p']}</td><td>#{value.first['x265_sd']}</td>
-    <td>#{value.first['x264_1080p']}</td><td>#{value.first['x264_720p']}</td><td>#{value.first['x264_sd']}</td>
-    <td>#{value.first['mpeg_720p']}</td><td>#{value.first['mpeg_sd']}</td></tr>"
+def report_row(show, show_size, name)
+  erb = ERB.new(File.read('templates/report_row.html.erb'))
+  erb.result(binding)
+
+  # "<tr><td class='left'>#{show}</td><td>#{show_size}</td>
+  #   <td class='center'><progress max='#{value.first['episodes']}'
+  #     value='#{value.first['x265_episodes']}'></progress></td>
+  #   <td>#{value.first['episodes']}</td><td>#{episode_badge(value)}</td>
+  #   <td>#{value.first['x265_1080p']}</td><td>#{value.first['x265_720p']}</td><td>#{value.first['x265_sd']}</td>
+  #   <td>#{value.first['x264_1080p']}</td><td>#{value.first['x264_720p']}</td><td>#{value.first['x264_sd']}</td>
+  #   <td>#{value.first['mpeg_720p']}</td><td>#{value.first['mpeg_sd']}</td></tr>"
 end
 
 def create_html_report(config, episodes)
@@ -102,11 +105,11 @@ def create_html_report(config, episodes)
   end
 
   total_x265 = total_size = 0
-  shows.sort.each do |show, value|
-    show_size = value.first['show_size'] / 1024 / 1024
+  shows.sort.each do |show, name|
+    show_size = name.first['show_size'] / 1024 / 1024
     total_size += show_size
-    total_x265 += value.first['x265_episodes']
-    html_table += report_row(show, show_size, value)
+    total_x265 += name.first['x265_episodes']
+    html_table += report_row(show, show_size, name.first)
   end
 
   x265_pct = ((total_x265.to_f * 100) / episodes.count).round(2)
