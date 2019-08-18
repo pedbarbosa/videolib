@@ -32,7 +32,7 @@ describe MediaInfoAdapter do
 
     describe '::size' do
       it 'should return the size of the video' do
-        expect(media.size).to eq nil
+        expect(media.size).to eq 1_052_413
       end
     end
   end
