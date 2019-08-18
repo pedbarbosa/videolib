@@ -131,7 +131,7 @@ def recode_list(recode, config)
   recode.sort.each do |file, show, codec, height, size|
     unless config['copy_override'].include? show
       recode_report += recode_row(codec, file, height, size)
-      files_to_copy << file unless File.file?(config['recode_cp_target'] + File.basename(file))
+      files_to_copy << file unless File.file?(config['recode_cp_target'] + File.basename(file.to_s))
     end
   end
   recode_report += '</table>'
