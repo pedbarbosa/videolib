@@ -18,6 +18,7 @@ class VideoLibrary
 
   def scan
     episodes = {}
+    @new_scans = 0
     tv_shows = scan_tv_shows
     puts "Found #{tv_shows.count} directories, starting episode scan..."
     progressbar = progressbar_create('Scanning', tv_shows.count)
@@ -28,6 +29,7 @@ class VideoLibrary
 
         file_path = @config['scan_path'] + show + '/' + file
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
+        write_json(@config['json_file'], episodes) if (@new_scans % 50).zero?
       end
     end
     progressbar.finish
@@ -44,6 +46,7 @@ class VideoLibrary
       @cache[file_path]
     else
       scan_media_file(file_path, show)
+      @new_scans += 1
     end
   end
 
