@@ -10,6 +10,8 @@ def codec_badge(codec)
     'x265'
   when 'V_MPEGH/ISO/HEVC'
     'x265'
+  when 'hev1'
+    'x265'
   when 'AVC'
     'x264'
   when 'V_MPEG4/ISO/AVC'
