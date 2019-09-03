@@ -11,9 +11,18 @@ class VideoLibrary
   def initialize(**params)
     @config_file = params[:config_file] || ENV['HOME'] + '/.videolib.yml'
     @config = load_configuration
-    @cache = File.file?(@config['json_file']) ? read_json(@config['json_file']) : {}
+    @cache = load_cache
     puts "Retrieved #{@cache.count} episodes from cache."
+    # write_json("#{@config['json_file']}.backup", @cache)
     validate_path(@config['scan_path'])
+  end
+
+  def load_cache
+    if File.file?(@config['json_file'])
+      read_json(@config['json_file'])
+    else
+      {}
+    end
   end
 
   def scan
@@ -29,7 +38,7 @@ class VideoLibrary
 
         file_path = @config['scan_path'] + show + '/' + file
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
-        write_json(@config['json_file'], episodes) if (@new_scans % 50).zero?
+        write_json(@config['json_file'], episodes) if (@new_scans % 2).zero?
       end
     end
     progressbar.finish
@@ -45,8 +54,8 @@ class VideoLibrary
     if @cache[file_path] && File.size(file_path) == @cache[file_path].first['size']
       @cache[file_path]
     else
-      scan_media_file(file_path, show)
       @new_scans += 1
+      scan_media_file(file_path, show)
     end
   end
 
