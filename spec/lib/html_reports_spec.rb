@@ -3,13 +3,15 @@
 require_relative '../../lib/html_reports'
 
 describe 'lib/html_reports.rb test' do
-  it 'Test track_codec output' do
+  it 'Test codec_badge output' do
     expect(codec_badge('HEVC')).to eql('x265')
     expect(codec_badge('V_MPEGH/ISO/HEVC')).to eql('x265')
+    expect(codec_badge('hev1')).to eql('x265')
     expect(codec_badge('AVC')).to eql('x264')
     expect(codec_badge('V_MPEG4/ISO/AVC')).to eql('x264')
     expect(codec_badge('MPEG something')).to eql('mpeg')
-    expect(codec_badge('something')).to eql('')
+
+    expect{codec_badge('123')}.to raise_error(InvalidCodec)
   end
 
   it 'Test track_resolution output' do

@@ -19,6 +19,8 @@ def write_file(file, contents)
   end
   FileUtils.cp(file + '.tmp', file)
   FileUtils.remove(file + '.tmp')
+rescue Interrupt
+  puts 'Caught an interrupt request while file was being written, ignoring to maintain file integrity.'
 end
 
 def write_json(file, json)
