@@ -34,7 +34,7 @@ class VideoLibrary
 
         file_path = @config['scan_path'] + show + '/' + file
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
-        write_json("#{@config['json_file']}.tmp", episodes) if (@new_scans % 50).zero?
+        write_json("#{@config['json_file']}.tmp", episodes) if !@new_scans.zero? && (@new_scans % 50).zero?
       end
     end
     progressbar.finish
