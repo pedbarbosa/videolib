@@ -18,11 +18,7 @@ class VideoLibrary
   end
 
   def load_cache
-    if File.file?(@config['json_file'])
-      read_json(@config['json_file'])
-    else
-      {}
-    end
+    File.file?(@config['json_file']) ? read_json(@config['json_file']) : {}
   end
 
   def scan
@@ -38,7 +34,7 @@ class VideoLibrary
 
         file_path = @config['scan_path'] + show + '/' + file
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
-        write_json(@config['json_file'], episodes) if (@new_scans % 2).zero?
+        write_json("#{@config['json_file']}.tmp", episodes) if (@new_scans % 50).zero?
       end
     end
     progressbar.finish
