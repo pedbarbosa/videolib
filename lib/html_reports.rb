@@ -23,7 +23,7 @@ end
 
 def track_resolution(height, filename)
   if height.nil?
-    # TODO : Provide proper exception handling for this and track_codec
+    # TODO : Provide proper exception handling for this
     puts "> Couldn't process #{filename} resolution, setting to 'SD'!"
     'sd'
   elsif height < 640
