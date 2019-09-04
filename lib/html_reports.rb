@@ -5,18 +5,16 @@ require 'fileutils'
 require_relative '../lib/json_utils'
 
 def codec_badge(codec)
-  case codec
-  when 'HEVC'
-    'x265'
-  when 'V_MPEGH/ISO/HEVC'
-    'x265'
-  when 'hev1'
-    'x265'
-  when 'AVC'
-    'x264'
-  when 'V_MPEG4/ISO/AVC'
-    'x264'
-  when /MPEG/
+  codecs = {
+    'HEVC' => 'x265',
+    'V_MPEGH/ISO/HEVC' => 'x265',
+    'hev1' => 'x265',
+    'AVC' => 'x264',
+    'V_MPEG4/ISO/AVC' => 'x264'
+  }
+  if codecs.include?(codec)
+    codecs[codec]
+  elsif /MPEG/.match?(codec)
     'mpeg'
   else
     raise InvalidCodec
@@ -84,19 +82,15 @@ def create_html_report(config)
     size = value.first['size']
 
     # Process shows that are marked with override
-    if config['codec_override'].include? show
-      format = 'x265_' + height
+    codec = config['codec_override'].include?(show) ? 'x265' : codec_badge(value.first['codec'])
+
+    if codec == 'x265'
       shows[show].first['x265_episodes'] += 1
     else
-      codec = codec_badge(value.first['codec'])
-      format = show_format(codec, height)
-      if codec == 'x265'
-        shows[show].first['x265_episodes'] += 1
-      else
-        recode << [file, show, codec, height, size] # unless size < 1_000_000_000
-      end
+      recode << [file, show, codec, height, size] # unless size < 1_000_000_000
     end
 
+    format = show_format(codec, height)
     increment_counters(shows[show], format, size)
   rescue InvalidCodec
     puts "Invalid codec detected: #{value.first}"
