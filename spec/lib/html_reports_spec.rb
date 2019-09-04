@@ -50,6 +50,23 @@ describe 'lib/html_reports.rb test' do
                           }
                         ])
   end
+
+  it 'Test show_format' do
+    expect { show_format('', '') }.to raise_error InvalidCodec
+    expect { show_format('', '1080p') }.to raise_error InvalidCodec
+    expect { show_format('x265', '') }.to raise_error InvalidHeight
+
+    expect(show_format('x265', '1080p')).to eq('x265_1080p')
+  end
+
+  it 'Test report_row' do
+    report = new_show.first
+    report['show_size'] = 123
+    report['episodes'] = 7
+
+    expect(report_row('abc', 123, report))
+      .to match(/<td class='left'>abc.*<td>123.*<progress max="7" value="0">/m)
+  end
 end
 # rubocop:enable Metrics/BlockLength
 
