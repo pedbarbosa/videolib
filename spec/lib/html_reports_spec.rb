@@ -2,6 +2,7 @@
 
 require_relative '../../lib/html_reports'
 
+# rubocop:disable Metrics/BlockLength
 describe 'lib/html_reports.rb test' do
   it 'Test codec_badge output' do
     expect(codec_badge('HEVC')).to eql('x265')
@@ -11,7 +12,7 @@ describe 'lib/html_reports.rb test' do
     expect(codec_badge('V_MPEG4/ISO/AVC')).to eql('x264')
     expect(codec_badge('MPEG something')).to eql('mpeg')
 
-    expect{codec_badge('123')}.to raise_error(InvalidCodec)
+    expect { codec_badge('123') }.to raise_error(InvalidCodec)
   end
 
   it 'Test track_resolution output' do
@@ -50,6 +51,7 @@ describe 'lib/html_reports.rb test' do
                         ])
   end
 end
+# rubocop:enable Metrics/BlockLength
 
 def episode_badge_test(first, second)
   test = new_show

@@ -2,6 +2,7 @@
 
 require_relative '../../adapters/mediainfo'
 
+# rubocop:disable Metrics/BlockLength
 describe MediaInfoAdapter do
   context 'with no input' do
     it 'fails and prints full message' do
@@ -37,3 +38,4 @@ describe MediaInfoAdapter do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

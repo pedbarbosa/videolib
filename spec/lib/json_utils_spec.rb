@@ -4,10 +4,10 @@ require_relative '../../lib/json_utils'
 
 describe 'lib/json_utils.rb test' do
   let(:test_file) { '/tmp/test.json' }
-  let(:test_hash) { { "a" => "b" } }
+  let(:test_hash) { { 'a' => 'b' } }
 
   it 'write test' do
-    expect{write_json(test_file, test_hash)}.not_to raise_error
+    expect { write_json(test_file, test_hash) }.not_to raise_error
   end
 
   before do
