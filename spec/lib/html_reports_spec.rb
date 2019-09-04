@@ -29,6 +29,26 @@ describe 'lib/html_reports.rb test' do
     expect(episode_badge_test('x265_sd', 'x264_sd')).to eql('SD')
     expect(episode_badge_test('x264_720p', 'x264_sd')).to eql('Mix')
   end
+
+  before do
+    @show = [
+      {
+        'show_size' => 100,
+        'episodes' => 10,
+        'codec_resolution' => 5
+      }
+    ]
+  end
+  it 'Test increment_counters' do
+    allow(increment_counters(@show, 'codec_resolution', 100))
+    expect(@show).to eq([
+                          {
+                            'codec_resolution' => 6,
+                            'episodes' => 11,
+                            'show_size' => 200
+                          }
+                        ])
+  end
 end
 
 def episode_badge_test(first, second)
