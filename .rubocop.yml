@@ -2,5 +2,5 @@ inherit_from: .rubocop_todo.yml
 
 require: rubocop-performance
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
