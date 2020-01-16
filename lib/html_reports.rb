@@ -10,7 +10,8 @@ def codec_badge(codec)
     'V_MPEGH/ISO/HEVC' => 'x265',
     'hev1' => 'x265',
     'AVC' => 'x264',
-    'V_MPEG4/ISO/AVC' => 'x264'
+    'V_MPEG4/ISO/AVC' => 'x264',
+    'XVID' => 'mpeg'
   }
   if codecs.include?(codec)
     codecs[codec]
@@ -93,7 +94,7 @@ def create_html_report(config)
     format = show_format(codec, height)
     increment_counters(shows[show], format, size)
   rescue InvalidCodec
-    puts "Invalid codec detected: #{value.first}"
+    puts "Invalid codec '#{value.first['codec']}' detected on '#{file}'!"
   end
 
   total_x265 = total_size = 0

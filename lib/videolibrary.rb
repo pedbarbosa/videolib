@@ -32,6 +32,11 @@ class VideoLibrary
       Dir.foreach(@config['scan_path'] + show) do |file|
         next unless @config['video_extensions'].include? File.extname(file)
 
+        unless file.encoding.to_s == 'US-ASCII'
+          puts "File '#{file}' has an unexpected encoding: #{file.encoding}"
+          next
+        end
+
         file_path = @config['scan_path'] + show + '/' + file
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
         write_json("#{@config['json_file']}.tmp", episodes) if !@new_scans.zero? && (@new_scans % 50).zero?
