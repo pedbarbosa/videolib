@@ -2,7 +2,7 @@ dist: bionic
 
 language: ruby
 
-rvm: 2.7.0
+rvm: 2.6.5
 
 install:
   - sudo apt update && sudo apt install mediainfo
@@ -12,7 +12,5 @@ install:
 
 script:
   - bundle exec rake
-  - pwd
   - cp videolib.yml ~/.videolib.yml
-  - ls -l
   - ./videolib.rb
