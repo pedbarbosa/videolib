@@ -70,31 +70,33 @@ def show_format(codec, height)
   codec + '_' + height
 end
 
-def create_html_report(config)
+def determine_or_override_codec_to_x265(value)
+  @config['codec_override'].include?(value.first['show']) ? 'x265' : codec_badge(value.first['codec'])
+end
+
+def create_html_report
   episodes = read_json(@config['json_file'])
   html_table = ''
   recode = []
 
   shows = {}
-  episodes.each do |file, value|
-    show = value.first['show']
+  episodes.each do |file, episode|
+    show = episode.first['show']
     shows[show] = new_show if shows[show].nil?
-    height = track_resolution(value.first['height'], file)
-    size = value.first['size']
-
-    # Process shows that are marked with override
-    codec = config['codec_override'].include?(show) ? 'x265' : codec_badge(value.first['codec'])
+    height = track_resolution(episode.first['height'], file)
+    size = episode.first['size']
+    codec = determine_or_override_codec_to_x265(episode)
 
     if codec == 'x265'
       shows[show].first['x265_episodes'] += 1
     else
-      recode << [file, show, codec, height, size] # unless size < 1_000_000_000
+      recode << [file, show, codec, height, size]
     end
 
     format = show_format(codec, height)
     increment_counters(shows[show], format, size)
   rescue InvalidCodec
-    puts "Invalid codec '#{value.first['codec']}' detected on '#{file}'!"
+    puts "Invalid codec '#{episode.first['codec']}' detected on '#{file}'!"
   end
 
   total_x265 = total_size = 0
@@ -111,9 +113,9 @@ def create_html_report(config)
   puts "Finished full directory scan. #{total_stats}"
 
   erb = ERB.new(File.read('templates/report.html.erb'))
-  write_file(config['html_report'], erb.result(binding))
+  write_file(@config['html_report'], erb.result(binding))
 
-  recode_list(recode, config) if config['recode_report']
+  recode_list(recode, @config) if @config['recode_report']
 end
 
 def report_row(show, show_size, name)
