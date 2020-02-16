@@ -13,9 +13,8 @@ class VideoLibrary
   include ConfigHandler
 
   def initialize
-    config = ConfigHandler.new
-    @config = config.load_configuration
-    @cache = config.load_cache
+    @config = load_configuration
+    @cache = load_cache
   end
 
   def scan
