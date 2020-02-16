@@ -5,6 +5,7 @@ require_relative 'config_handler.rb'
 require_relative 'json_utils'
 require_relative '../adapters/mediainfo'
 require_relative '../adapters/progressbar'
+require_relative '../lib/html_reports'
 
 # Video Library
 class VideoLibrary
@@ -36,6 +37,8 @@ class VideoLibrary
     end
     progressbar.finish
     write_cache(episodes)
+
+    create_html_report
   end
 
   private
