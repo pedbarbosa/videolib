@@ -8,11 +8,13 @@ def progressbar_create(operation, total)
 end
 
 def progressbar_title(title)
+  # rubocop:disable Style/FormatStringToken
   if title.length > 19
     format("'%-19.19s ...'", title)
   else
     format('%-25.25s', "'#{title}'")
   end
+  # rubocop:enable Style/FormatStringToken
 end
 
 def progressbar_update(progressbar, title)
