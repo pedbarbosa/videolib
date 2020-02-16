@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
+require 'yaml'
+
 # Video Library config handler
 module ConfigHandler
+  def initialize
+    @config_file = ENV['HOME'] + '/.videolib.yml'
+  end
+
   private
 
   def load_configuration
@@ -9,7 +15,9 @@ module ConfigHandler
       raise ConfigurationFileMissing, "'#{@config_file}' is missing, please check the README file!"
     end
 
-    YAML.load_file(@config_file)
+    config = YAML.load_file(@config_file)
+    validate_path(config['scan_path'])
+    config
   end
 
   def validate_path(path)

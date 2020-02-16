@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
-require 'yaml'
-require_relative 'config_handler.rb'
-require_relative 'json_utils'
 require_relative '../adapters/mediainfo'
 require_relative '../adapters/progressbar'
-require_relative '../lib/html_reports'
+require_relative 'cache_handler.rb'
+require_relative 'config_handler.rb'
+require_relative 'html_reports'
+require_relative 'json_utils'
 
 # Video Library
 class VideoLibrary
+  include CacheHandler
   include ConfigHandler
 
-  def initialize(**params)
-    @config_file = params[:config_file] || ENV['HOME'] + '/.videolib.yml'
-    @config = load_configuration
-    load_cache
-    validate_path(@config['scan_path'])
+  def initialize
+    config = ConfigHandler.new
+    @config = config.load_configuration
+    @cache = config.load_cache
   end
 
   def scan
@@ -42,20 +42,6 @@ class VideoLibrary
   end
 
   private
-
-  def load_cache
-    @cache = File.file?(@config['json_file']) ? read_json(@config['json_file']) : {}
-    puts "Retrieved #{@cache.count} episodes from cache."
-  end
-
-  def write_cache(episodes)
-    write_json(@config['json_file'], episodes)
-    puts "Wrote #{episodes.count} episodes back to cache."
-  end
-
-  def write_temporary_cache(episodes)
-    write_json("#{@config['json_file']}.tmp", episodes) if !@new_scans.zero? && (@new_scans % 50).zero?
-  end
 
   def invalid_encoding?(file)
     if file.encoding.to_s == 'US-ASCII'
