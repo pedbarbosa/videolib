@@ -7,6 +7,8 @@ rvm: 2.6.5
 install:
   - sudo apt update && sudo apt install mediainfo
   - bundle install
+  - cp .videolib.yml ~/
+  - mkdir -p /tmp/video/TV
 
 script:
   - bundle exec rake && ./videolib.rb

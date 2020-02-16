@@ -1,25 +1,35 @@
 json_file:
-    'videolib.json'
+  # Location of episode cache scan
+  'videolib.json'
 
 scan_path:
-    '<video folder location>'
-    
-html_report:
-    '<where to store the html report>'
-
-codec_override:
-    ['this_one', 'that_one']
+  # Update the location of your episodes
+  '/tmp/video/TV/'
 
 ignore_folders:
-    ['.', '..', '.DS_Store']
+  # Folders to ignore while scanning
+  ['.', '..', '.DS_Store']
 
 video_extensions:
-    ['.avi', '.m4v', '.mkv', '.mp4', '.mpg', '.ts']
+  # File extensions to scan
+  ['.avi', '.m4v', '.mkv', '.mp4', '.mpg', '.ts']
 
-# Optional entries
-# recode_report:
-#     '<where to store the recode report>'
-# recode_cp_target:
-#     '<where to copy files that require recoding>'
-# recode_disk:
-#     '<mount point for recode disk>'
+codec_override:
+  # List of codecs to override (ignore), will set to x265
+  ['this_one', 'that_one']
+
+html_report:
+  # Location for the HTML report
+  '/tmp/index.html'
+
+recode_report:
+  # Location for the HTML recode report
+  '/tmp/recode.html'
+
+recode_cp_target:
+  # Where to copy files that require recoding
+  '/tmp/recode/'
+
+recode_disk:
+  # Detect if recode destination media is mounted
+  '/tmp/'
