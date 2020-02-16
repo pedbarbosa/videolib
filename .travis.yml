@@ -12,5 +12,7 @@ install:
 
 script:
   - bundle exec rake
-  - cp .videolib.yml ~/
+  - pwd
+  - cp videolib.yml ~/.videolib.yml
+  - ls -l
   - ./videolib.rb
