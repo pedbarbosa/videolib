@@ -4,7 +4,7 @@ GEM
     colorize (0.8.1)
     mini_portile2 (2.4.0)
     mysql2 (0.5.3)
-    nokogiri (1.10.7)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
 
 PLATFORMS
