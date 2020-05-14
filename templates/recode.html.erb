@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title>TV Episodes requiring x265 recoding</title>
+    <style>
+      body { background-color: black; color: white;}
+
+
+      #recode {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      #recode td {
+        border: 1px solid #dddddd;
+        padding: 8px;
+        text-align: right
+      }
+
+      #recode td.left {
+        text-align: left
+      }
+
+      #recode td.center {
+        text-align: center
+      }
+
+      #recode th {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 12px 8px;
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      #recode tr {
+        background-color: #333333;
+      }
+
+      #recode tr:nth-child(even) {
+        background-color: #222222;
+      }
+
+      #recode tr:hover {
+        background-color: #227722;
+      }
+    </style>
+  </head>
+  <body>
+  <table id="recode">
+      <tr>
+        <th>Codec</th>
+        <th>Resolution</th>
+        <th>Size</th>
+        <th>Filename</th>
+      </tr>
+<%= html_table %>    </table>
+  </body>
+</html>
