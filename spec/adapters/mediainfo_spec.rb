@@ -11,29 +11,29 @@ describe MediaInfoAdapter do
   end
 
   context 'with an URL input' do
-    media = described_class.new('https://www.sample-videos.com/video123/mkv/720/big_buck_bunny_720p_1mb.mkv')
+    media = described_class.new('http://mirrors.standaloneinstaller.com/video-sample/small.mkv')
 
     describe '::codec' do
       it 'should return the codec of the video' do
-        expect(media.codec).to eq 'V_MPEG4/ISO/ASP'
+        expect(media.codec).to eq 'V_MPEG4/ISO/AVC'
       end
     end
 
     describe '::width' do
       it 'should return the width of the video' do
-        expect(media.width).to eq 1280
+        expect(media.width).to eq 560
       end
     end
 
     describe '::height' do
       it 'should return the height of the video' do
-        expect(media.height).to eq 720
+        expect(media.height).to eq 320
       end
     end
 
     describe '::size' do
       it 'should return the size of the video' do
-        expect(media.size).to eq 1_052_413
+        expect(media.size).to eq 176_123
       end
     end
   end

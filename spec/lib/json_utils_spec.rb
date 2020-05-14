@@ -3,6 +3,7 @@
 require_relative '../../lib/json_utils'
 
 describe 'lib/json_utils.rb test' do
+  let(:missing_file) { '/tmp/missing.json' }
   let(:test_file) { '/tmp/test.json' }
   let(:test_hash) { { 'a' => 'b' } }
 
@@ -16,5 +17,9 @@ describe 'lib/json_utils.rb test' do
 
   it 'read test' do
     expect(@read_test).to eq(test_hash)
+  end
+
+  it 'missing test' do
+    expect(read_json(missing_file)).to eq({})
   end
 end
