@@ -9,7 +9,7 @@ describe RecodeReport do
     expect(e.message).to eq('wrong number of arguments (given 0, expected 1)')
   end
 
-  recode_report = 'tmp/videolib_test.html'
+  recode_report = '/tmp/videolib_test.html'
   params = {
     config: {
       'copy_override' => ['abc'],

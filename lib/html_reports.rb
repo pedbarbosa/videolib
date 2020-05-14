@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'erb'
 require_relative 'recode_report'
 require_relative '../lib/json_utils'
 
