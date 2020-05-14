@@ -12,7 +12,7 @@ class RecodeReport
   def generate
     html_table = ''
     @recode.sort.each do |file, show, codec, height, size|
-      html_table += recode_row(codec, file, height, size) unless override_show?(show)
+      html_table += recode_row(codec, height, size, show, file) unless override_show?(show)
     end
     recode_report = generate_html(html_table)
     write_file(@config['recode_report'], recode_report)
@@ -29,7 +29,7 @@ class RecodeReport
     erb.result(binding)
   end
 
-  def recode_row(codec, file, height, size)
+  def recode_row(codec, height, size, show, file)
     erb = ERB.new(File.read('templates/recode_row.html.erb'))
     erb.result(binding)
   end
