@@ -115,7 +115,10 @@ def create_html_report
   erb = ERB.new(File.read('templates/report.html.erb'))
   write_file(@config['html_report'], erb.result(binding))
 
-  RecodeReport.new(config: @config, recode: recode) if @config['recode_report']
+  return unless @config['recode_report']
+
+  recode_report = RecodeReport.new(config: @config, recode: recode)
+  recode_report.generate
 end
 
 def report_row(show, show_size, name)
