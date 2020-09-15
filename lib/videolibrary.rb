@@ -51,8 +51,12 @@ class VideoLibrary
     end
   end
 
+  def file_size_unchanged?(file_path)
+    File.size(file_path) == @cache[file_path].first['size']
+  end
+
   def scan_media_if_new_or_changed(file_path, show)
-    if @cache[file_path] && File.size(file_path) == @cache[file_path].first['size']
+    if @cache[file_path] && file_size_unchanged?(file_path)
       @cache[file_path]
     else
       @new_scans += 1

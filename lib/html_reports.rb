@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'erb'
-require 'fileutils'
+require_relative 'recode_report'
 require_relative '../lib/json_utils'
 
 def codec_badge(codec)
@@ -115,7 +115,10 @@ def create_html_report
   erb = ERB.new(File.read('templates/report.html.erb'))
   write_file(@config['html_report'], erb.result(binding))
 
-  recode_list(recode, @config) if @config['recode_report']
+  return unless @config['recode_report']
+
+  recode_report = RecodeReport.new(config: @config, recode: recode)
+  recode_report.generate
 end
 
 def report_row(show, show_size, name)
@@ -123,38 +126,18 @@ def report_row(show, show_size, name)
   erb.result(binding)
 end
 
-def recode_row(codec, file, height, size)
-  erb = ERB.new(File.read('templates/recode_row.html.erb'))
-  erb.result(binding)
-end
-
-def recode_list(recode, config)
-  files_to_copy = []
-  recode_report = '<table border=1>'
-  recode.sort.each do |file, show, codec, height, size|
-    unless config['copy_override'].include? show
-      recode_report += recode_row(codec, file, height, size)
-      files_to_copy << file unless File.file?(config['recode_cp_target'] + File.basename(file.to_s))
-    end
-  end
-  recode_report += '</table>'
-  write_file(config['recode_report'], recode_report)
-  return if files_to_copy.empty? || !File.directory?(config['recode_cp_target'])
-
-  copy_files(files_to_copy, config['recode_cp_target'], config['recode_disk'])
-end
-
-def copy_files(files_to_copy, target, disk)
-  files_to_copy.each do |file|
-    next if File.exist?("#{target}/#{file}")
-
-    diskspace = `df -m #{disk}`.split(/\b/)[24].to_i
-    raise "ERROR: File copy stopped, #{disk} is almost full." unless diskspace > 10_000
-
-    puts "Copying #{file} to #{target} ..."
-    FileUtils.cp(file, target)
-  end
-end
+# TODO: Determine where to place this function
+# def copy_files(files_to_copy, target, disk)
+#   files_to_copy.each do |file|
+#     next if File.exist?("#{target}/#{file}")
+#
+#     diskspace = `df -m #{disk}`.split(/\b/)[24].to_i
+#     raise "ERROR: File copy stopped, #{disk} is almost full." unless diskspace > 10_000
+#
+#     puts "Copying #{file} to #{target} ..."
+#     FileUtils.cp(file, target)
+#   end
+# end
 
 class InvalidCodec < StandardError
 end

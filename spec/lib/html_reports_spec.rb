@@ -4,6 +4,12 @@ require_relative '../../lib/html_reports'
 
 # rubocop:disable Metrics/BlockLength
 describe 'lib/html_reports.rb test' do
+  it 'Test codec override' do
+    @config = { 'codec_override' => ['foo'] }
+    expect(determine_or_override_codec_to_x265([{ 'show' => 'foo', 'codec' => 'XVID' }])).to eql('x265')
+    expect(determine_or_override_codec_to_x265([{ 'show' => 'bar', 'codec' => 'XVID' }])).to eql('mpeg')
+  end
+
   it 'Test codec_badge output' do
     expect(codec_badge('HEVC')).to eql('x265')
     expect(codec_badge('V_MPEGH/ISO/HEVC')).to eql('x265')
