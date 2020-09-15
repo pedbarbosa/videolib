@@ -2,32 +2,54 @@ inherit_from: .rubocop_todo.yml
 
 require: rubocop-performance
 
+AllCops:
+  EnabledByDefault: true
+
 Layout/LineLength:
   Max: 120
 
-Layout/EmptyLinesAroundAttributeAccessor:
-  Enabled: true
+# Cops temporarily disabled
+Bundler/GemComment:
+  Enabled: false
 
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: false
 
-Lint/RaiseException:
-  Enabled: true
+Layout/MultilineArrayLineBreaks:
+  Enabled: false
 
-Lint/StructNewOverride:
-  Enabled: true
+Layout/MultilineMethodArgumentLineBreaks:
+  Enabled: false
 
-Style/ExponentialNotation:
-  Enabled: true
+Lint/ConstantResolution:
+  Enabled: false
 
-Style/HashEachMethods:
-  Enabled: true
+Lint/NumberConversion:
+  Enabled: false
 
-Style/HashTransformKeys:
-  Enabled: true
+Style/MethodCallWithArgsParentheses:
+  Enabled: false
 
-Style/HashTransformValues:
-  Enabled: true
+Style/Copyright:
+  Enabled: false
 
-Style/SlicingWithRange:
-  Enabled: true
+Style/DocumentationMethod:
+  Enabled: false
+
+Style/DisableCopsWithinSourceCodeDirective:
+  Enabled: false
+
+Style/HashAsLastArrayItem:
+  Enabled: false
+
+Style/IpAddresses:
+  Enabled: false
+
+Style/MissingElse:
+  Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false
+
+Style/StringHashKeys:
+  Enabled: false
