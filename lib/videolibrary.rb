@@ -2,8 +2,8 @@
 
 require_relative '../adapters/mediainfo'
 require_relative '../adapters/progressbar'
-require_relative 'cache_handler.rb'
-require_relative 'config_handler.rb'
+require_relative 'cache_handler'
+require_relative 'config_handler'
 require_relative 'html_reports'
 require_relative 'json_utils'
 
