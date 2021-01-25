@@ -73,6 +73,8 @@ class VideoLibrary
       height: media.height,
       size: media.size
     ]
+  rescue NoMethodError => e
+    raise InvalidMediaInfo, "Unable to fetch MediaInfo details for '#{show}' - #{file_path}, #{e}"
   end
 
   def scan_with_symlink(file_path)
@@ -89,5 +91,8 @@ class VideoLibrary
     end
     puts "Found #{tv_shows.count} directories."
     tv_shows
+  end
+
+  class InvalidMediaInfo < StandardError
   end
 end
