@@ -14,11 +14,11 @@ def read_json(file)
 end
 
 def write_file(file, contents)
-  File.open(file + '.tmp', 'w') do |f|
+  File.open("#{file}.tmp", 'w') do |f|
     f.write(contents)
   end
-  FileUtils.cp(file + '.tmp', file)
-  FileUtils.remove(file + '.tmp')
+  FileUtils.cp("#{file}.tmp", file)
+  FileUtils.remove("#{file}.tmp")
 rescue Interrupt
   puts 'Caught an interrupt request while file was being written, ignoring to maintain file integrity.'
 end

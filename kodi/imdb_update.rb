@@ -47,7 +47,7 @@ def title_update(title)
 end
 
 def title_mismatch_warn(title)
-  puts title_id_badge(title) + ' ' + 'WARN:'.yellow +
+  puts "#{title_id_badge(title)} #{'WARN:'.yellow}"\
        " Title mismatch between '#{title['title']}' (Kodi) and '#{imdb_title}' (IMDB)"
 end
 

@@ -1,0 +1,32 @@
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.1.2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.7.2-buster
+    executor: ruby/default
+    steps:
+      - checkout
+      - run:
+          name: Install packages
+          command: sudo apt update && sudo apt install mediainfo
+      - run:
+          name: Install bundler
+          command: gem install bundler
+      - run:
+          name: Install gems
+          command: bundle install
+      - run:
+          name: Set up test directory
+          command: mkdir -p /tmp/video/TV
+      - run:
+          name: Run rake tests
+          command: bundle exec rake
+      - run:
+          name: Set up videolib config
+          command: cp videolib.yml ~/.videolib.yml
+      - run:
+          name: Run the script
+          command: ./videolib.rb

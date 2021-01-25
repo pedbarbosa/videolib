@@ -30,7 +30,7 @@ class VideoLibrary
         # TODO: Check if still required
         # next if invalid_encoding?(file)
 
-        file_path = @config['scan_path'] + show + '/' + file
+        file_path = "#{@config['scan_path']}#{show}/#{file}"
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
         write_temporary_cache(episodes)
 
