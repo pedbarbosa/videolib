@@ -7,7 +7,7 @@ module ConfigHandler
   private
 
   def load_configuration
-    config_file = ENV['HOME'] + '/.videolib.yml'
+    config_file = "#{ENV['HOME']}/.videolib.yml"
 
     unless File.file?(config_file)
       raise ConfigurationFileMissing, "'#{config_file}' is missing, please check the README file!"

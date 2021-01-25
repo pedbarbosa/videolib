@@ -9,6 +9,8 @@ class MediaInfoAdapter
   end
 
   def codec
+    raise CorruptedFile if @media.video.nil?
+
     @media.video.codecid
   end
 
@@ -22,5 +24,8 @@ class MediaInfoAdapter
 
   def size
     @media.general.filesize
+  end
+
+  class CorruptedFile < StandardError
   end
 end

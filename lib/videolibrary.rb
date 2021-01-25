@@ -27,11 +27,18 @@ class VideoLibrary
       Dir.foreach(@config['scan_path'] + show) do |file|
         next unless @config['video_extensions'].include? File.extname(file)
 
-        next if invalid_encoding?(file)
+        # TODO: Check if still required
+        # next if invalid_encoding?(file)
 
-        file_path = @config['scan_path'] + show + '/' + file
+        file_path = "#{@config['scan_path']}#{show}/#{file}"
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
         write_temporary_cache(episodes)
+
+        scan_result = scan_media_if_new_or_changed(file_path, show)
+        unless scan_result.nil?
+          episodes[file_path.to_sym] = scan_result
+          write_temporary_cache(episodes)
+        end
       end
     end
     progressbar.finish
@@ -73,6 +80,8 @@ class VideoLibrary
       height: media.height,
       size: media.size
     ]
+  rescue MediaInfoAdapter::CorruptedFile
+    puts "\nERROR: Corrupted metadata in file '#{file_path}', please check!"
   end
 
   def scan_with_symlink(file_path)

@@ -1,4 +1,4 @@
-# Videolib [![Build Status](https://travis-ci.org/pedbarbosa/videolib.svg?branch=master)](https://travis-ci.org/pedbarbosa/videolib) [![codecov](https://codecov.io/gh/pedbarbosa/videolib/branch/master/graph/badge.svg)](https://codecov.io/gh/pedbarbosa/videolib)
+# Videolib [![Build Status](https://circleci.com/gh/pedbarbosa/videolib.svg?style=shield)](https://travis-ci.org/pedbarbosa/videolib) [![codecov](https://codecov.io/gh/pedbarbosa/videolib/branch/master/graph/badge.svg)](https://codecov.io/gh/pedbarbosa/videolib)
 
 This tool scans a predetermined folder for TV shows and episodes within, and provides an HTML report with codec details. Optionally it can also create a report for files that aren't coded with 'x265'.
 
