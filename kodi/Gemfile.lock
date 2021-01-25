@@ -2,10 +2,12 @@ GEM
   remote: https://rubygems.org/
   specs:
     colorize (0.8.1)
-    mini_portile2 (2.4.0)
+    mini_portile2 (2.5.0)
     mysql2 (0.5.3)
-    nokogiri (1.10.10)
-      mini_portile2 (~> 2.4.0)
+    nokogiri (1.11.1)
+      mini_portile2 (~> 2.5.0)
+      racc (~> 1.4)
+    racc (1.5.2)
 
 PLATFORMS
   ruby
