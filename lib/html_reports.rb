@@ -70,7 +70,7 @@ def show_format(codec, height)
 
   raise InvalidHeight if height == ''
 
-  codec + '_' + height
+  "#{codec}_#{height}"
 end
 
 def determine_or_override_codec_to_x265(value)
