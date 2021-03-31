@@ -4,8 +4,8 @@ require 'erb'
 require_relative 'recode_report'
 require_relative '../lib/json_utils'
 
-def codec_badge(codec)
-  codecs = {
+def available_codecs
+  {
     'HEVC' => 'x265',
     'V_MPEGH/ISO/HEVC' => 'x265',
     'hev1' => 'x265',
@@ -14,8 +14,11 @@ def codec_badge(codec)
     'V_MPEG4/ISO/AVC' => 'x264',
     'XVID' => 'mpeg'
   }
-  if codecs.include?(codec)
-    codecs[codec]
+end
+
+def codec_badge(codec)
+  if available_codecs.include?(codec)
+    available_codecs[codec]
   elsif /MPEG/.match?(codec)
     'mpeg'
   else

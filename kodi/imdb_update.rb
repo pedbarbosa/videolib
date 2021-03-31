@@ -51,15 +51,19 @@ def title_mismatch_warn(title)
        " Title mismatch between '#{title['title']}' (Kodi) and '#{imdb_title}' (IMDB)"
 end
 
+def update_database_entry(title)
+  mysql_query = "UPDATE movie_view SET rating='#{imdb_rating}', votes='#{imdb_votes}' WHERE idMovie='#{title['id']}';"
+  mysql_client = MySQL2Helper.new(MYSQL_CONFIG)
+  mysql_client.query(mysql_query)
+end
+
 def process_title(title)
   id = title['imdb_id']
   update = '(N/C)'
   fetch_page("http://www.imdb.com/title/#{id}")
 
   if (title['rating'] != imdb_rating) || (title['votes'] != imdb_votes)
-    mysql_query = "UPDATE movie_view SET rating='#{imdb_rating}', votes='#{imdb_votes}' WHERE idMovie='#{title['id']}';"
-    mysql_client = MySQL2Helper.new(MYSQL_CONFIG)
-    mysql_client.query(mysql_query)
+    update_database_entry(title)
     update = title_update(title)
   end
   title_line(title, update)
@@ -68,7 +72,7 @@ end
 
 MAX_THREADS = 100
 MYSQL_CONFIG = {
-  host: '192.168.2.2',
+  host: '192.168.2.200',
   username: 'kodi',
   password: 'kodi',
   database: 'MyVideos116'
