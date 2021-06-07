@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../adapters/mediainfo'
 require_relative '../adapters/progressbar'
 require_relative 'cache_handler'
 require_relative 'config_handler'
+require_relative 'file_scanner'
 require_relative 'html_reports'
 require_relative 'json_utils'
 
@@ -27,9 +27,6 @@ class VideoLibrary
       Dir.foreach(@config['scan_path'] + show) do |file|
         next unless @config['video_extensions'].include? File.extname(file)
 
-        # TODO: Check if still required
-        # next if invalid_encoding?(file)
-
         file_path = "#{@config['scan_path']}#{show}/#{file}"
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
         write_temporary_cache(episodes)
@@ -49,15 +46,6 @@ class VideoLibrary
 
   private
 
-  def invalid_encoding?(file)
-    if file.encoding.to_s == 'US-ASCII'
-      false
-    else
-      puts "File '#{file}' has an unexpected encoding: #{file.encoding}"
-      true
-    end
-  end
-
   def file_size_unchanged?(file_path)
     File.size(file_path) == @cache[file_path].first['size']
   end
@@ -67,28 +55,8 @@ class VideoLibrary
       @cache[file_path]
     else
       @new_scans += 1
-      scan_media_file(file_path, show)
+      FileScanner.scan_media_file(file_path, show)
     end
-  end
-
-  def scan_media_file(file_path, show)
-    media = scan_with_symlink(file_path)
-    [
-      show: show,
-      codec: media.codec,
-      width: media.width,
-      height: media.height,
-      size: media.size
-    ]
-  rescue MediaInfoAdapter::CorruptedFile
-    puts "\nERROR: Corrupted metadata in file '#{file_path}', please check!"
-  end
-
-  def scan_with_symlink(file_path)
-    scan_link = '/tmp/videolib_scan.mkv'
-    File.unlink(scan_link) if File.symlink?(scan_link)
-    File.symlink(file_path, scan_link)
-    MediaInfoAdapter.new(scan_link)
   end
 
   def scan_tv_shows
