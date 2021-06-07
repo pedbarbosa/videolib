@@ -4,7 +4,19 @@
 require 'colorize'
 require 'nokogiri'
 require 'open-uri'
+require 'yaml'
 require_relative 'helpers/mysql2'
+
+def load_configuration
+  config_file = "#{ENV['HOME']}/.imdb_update.yml"
+
+  unless File.file?(config_file)
+    puts "'#{config_file}' is missing, please check the README file!"
+    exit 1
+  end
+
+  YAML.load_file(config_file)
+end
 
 def fetch_page(link)
   @imdb_page = Nokogiri::HTML(URI.parse(link).open)
@@ -18,11 +30,11 @@ def imdb_title
 end
 
 def imdb_rating
-  @imdb_page.search('div.ratingValue').search('span').children[0].content.to_f
+  @imdb_page.search('div.ipl-rating-star').search('span').children[3].content.to_f
 end
 
 def imdb_votes
-  @imdb_page.search('div.imdbRating').search('a').children[0].content.delete(',').to_i
+  @imdb_page.search('div.allText').children[3].content.delete(',').to_i
 end
 
 def color_compare(old, new)
@@ -53,15 +65,14 @@ end
 
 def update_database_entry(title)
   mysql_query = "UPDATE movie_view SET rating='#{imdb_rating}', votes='#{imdb_votes}' WHERE idMovie='#{title['id']}';"
-  mysql_client = MySQL2Helper.new(MYSQL_CONFIG)
+  mysql_client = MySQL2Helper.new(@config)
   mysql_client.query(mysql_query)
 end
 
 def process_title(title)
   id = title['imdb_id']
   update = '(N/C)'
-  fetch_page("http://www.imdb.com/title/#{id}")
-
+  fetch_page("http://www.imdb.com/title/#{id}/ratings/?ref_=tt_ov_rt")
   if (title['rating'] != imdb_rating) || (title['votes'] != imdb_votes)
     update_database_entry(title)
     update = title_update(title)
@@ -70,29 +81,27 @@ def process_title(title)
   title_mismatch_warn(title) if title['title'] != imdb_title
 end
 
-MAX_THREADS = 100
-MYSQL_CONFIG = {
-  host: '192.168.2.200',
-  username: 'kodi',
-  password: 'kodi',
-  database: 'MyVideos116'
-}.freeze
+def start_scan
+  @config = load_configuration
 
-start = ENV['START'] ? ENV['START'].to_i : 0
-limit = ENV['LIMIT'] ? ENV['LIMIT'].to_i : 20
-mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id' \
+  start = ENV['START'] ? ENV['START'].to_i : 0
+  limit = ENV['LIMIT'] ? ENV['LIMIT'].to_i : 20
+  mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id' \
               " from movie_view ORDER BY idMovie DESC LIMIT #{start},#{limit};"
 
-mysql_client = MySQL2Helper.new(MYSQL_CONFIG)
-results = mysql_client.query(mysql_query)
+  mysql_client = MySQL2Helper.new(@config)
+  results = mysql_client.query(mysql_query)
 
-puts "Checking IMDB ratings for #{results.count} titles in Kodi"
+  puts "Checking IMDB ratings for #{results.count} titles in Kodi"
 
-results.each_slice(MAX_THREADS) do |slice|
-  slice.each do |title|
-    fork do
-      process_title(title)
+  results.each_slice(@config['max_threads']) do |slice|
+    slice.each do |title|
+      fork do
+        process_title(title)
+      end
     end
+    Process.waitall
   end
-  Process.waitall
 end
+
+start_scan
