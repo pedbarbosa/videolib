@@ -3,5 +3,7 @@
 
 require_relative 'lib/videolibrary'
 
+$stdout.sync = true
+
 library = VideoLibrary.new
 library.scan

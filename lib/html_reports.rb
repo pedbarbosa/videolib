@@ -120,11 +120,23 @@ def create_html_report
 
   recode_report = RecodeReport.new(config: @config, recode: recode)
   recode_report.generate
+  # upload_files(recode)
 end
 
 def report_row(show, show_size, name)
   erb = ERB.new(File.read('templates/report_row.html.erb'))
   erb.result(binding)
+end
+
+def upload_files(files)
+  files.each do |file|
+    filename = file[0]
+    show = file[1]
+    next if @config['copy_override'].include?(show)
+    
+    puts "Syncing '#{filename}' to 'enc' ..."
+    #system("rsync -Pav \"#{filename}\" enc:/video/on-hold/")
+  end
 end
 
 # TODO: Determine where to place this function

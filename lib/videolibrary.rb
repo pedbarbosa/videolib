@@ -27,7 +27,7 @@ class VideoLibrary
       Dir.foreach(@config['scan_path'] + show) do |file|
         next unless @config['video_extensions'].include? File.extname(file)
 
-        next if invalid_encoding?(file)
+        # next if invalid_encoding?(file)
 
         file_path = @config['scan_path'] + show + '/' + file
         episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
