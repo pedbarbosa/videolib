@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../sample_downloader'
 require_relative '../../adapters/mediainfo'
 
 # rubocop:disable Metrics/BlockLength
@@ -11,29 +12,30 @@ describe MediaInfoAdapter do
   end
 
   context 'with an URL input' do
+    sample = media_sample
     media = described_class.new('/tmp/videolib_sample.mkv')
 
     describe '::codec' do
       it 'should return the codec of the video' do
-        expect(media.codec).to eq 'V_MPEG4/ISO/AVC'
+        expect(media.codec).to eq sample[:codec]
       end
     end
 
     describe '::width' do
       it 'should return the width of the video' do
-        expect(media.width).to eq 560
+        expect(media.width).to eq sample[:width]
       end
     end
 
     describe '::height' do
       it 'should return the height of the video' do
-        expect(media.height).to eq 320
+        expect(media.height).to eq sample[:height]
       end
     end
 
     describe '::size' do
       it 'should return the size of the video' do
-        expect(media.size).to eq 176_123
+        expect(media.size).to eq sample[:size]
       end
     end
   end

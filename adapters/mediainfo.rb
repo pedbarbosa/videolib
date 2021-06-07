@@ -5,11 +5,15 @@ require 'mediainfo'
 # Adapter for MediaInfo
 class MediaInfoAdapter
   def initialize(filename)
-    @media = MediaInfo.from(filename)
+    @filename = filename
+    @media = MediaInfo.from(@filename)
   end
 
   def codec
-    raise CorruptedFile if @media.video.nil?
+    if @media.video.nil?
+      puts "\nERROR: Corrupted metadata in file '#{@filename}', please check!"
+      raise CorruptedFile
+    end
 
     @media.video.codecid
   end

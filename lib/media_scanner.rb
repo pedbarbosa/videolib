@@ -2,13 +2,11 @@
 
 require_relative '../adapters/mediainfo'
 
-# Video Library file scanner
-class FileScanner
+# Video Library media scanner
+class MediaScanner
   def scan_media_file(file_path, show)
     media = scan_with_symlink(file_path)
     scan_format(media, show)
-  rescue MediaInfoAdapter::CorruptedFile
-    puts "\nERROR: Corrupted metadata in file '#{file_path}', please check!"
   end
 
   def scan_with_symlink(file_path)
