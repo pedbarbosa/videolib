@@ -11,7 +11,7 @@ describe MediaInfoAdapter do
   end
 
   context 'with an URL input' do
-    media = described_class.new('http://mirrors.standaloneinstaller.com/video-sample/small.mkv')
+    media = described_class.new('/tmp/videolib_sample.mkv')
 
     describe '::codec' do
       it 'should return the codec of the video' do
