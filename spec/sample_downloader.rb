@@ -15,4 +15,3 @@ def media_sample
     size: 176_123,
     width: 560 }
 end
-
