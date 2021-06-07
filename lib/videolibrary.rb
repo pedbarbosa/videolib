@@ -3,9 +3,9 @@
 require_relative '../adapters/progressbar'
 require_relative 'cache_handler'
 require_relative 'config_handler'
-require_relative 'file_scanner'
 require_relative 'html_reports'
 require_relative 'json_utils'
+require_relative 'media_scanner'
 
 # Video Library
 class VideoLibrary
@@ -55,7 +55,7 @@ class VideoLibrary
       @cache[file_path]
     else
       @new_scans += 1
-      FileScanner.scan_media_file(file_path, show)
+      MediaScanner.scan_media_file(file_path, show)
     end
   end
 
