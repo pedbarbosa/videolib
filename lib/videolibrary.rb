@@ -55,7 +55,8 @@ class VideoLibrary
       @cache[file_path]
     else
       @new_scans += 1
-      MediaScanner.scan_media_file(file_path, show)
+      scanner = MediaScanner.new
+      scanner.scan_media_file(file_path, show)
     end
   end
 
