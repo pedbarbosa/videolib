@@ -11,9 +11,16 @@ class RecodeReport
 
   def generate
     html_table = ''
+    total_count = 0
+    total_size = 0
+
     @recode.sort.each do |file, show, codec, height, size|
-      html_table += recode_row(codec, height, size, show, file) unless override_show?(show)
+      html_table += recode_row(codec, height, bytes_to_mb(size), show, file) unless override_show?(show)
+      total_count += 1
+      total_size += size
     end
+    html_table += recode_totals(total_count, bytes_to_mb(total_size))
+
     recode_report = generate_html(html_table)
     write_file(@config['recode_report'], recode_report)
   end
@@ -29,8 +36,17 @@ class RecodeReport
     erb.result(binding)
   end
 
+  def bytes_to_mb(size)
+    size / 1024 / 1024
+  end
+
   def recode_row(codec, height, size, show, file)
     erb = ERB.new(File.read('templates/recode_row.html.erb'))
+    erb.result(binding)
+  end
+
+  def recode_totals(total_count, total_size)
+    erb = ERB.new(File.read('templates/recode_totals.html.erb'))
     erb.result(binding)
   end
 end
