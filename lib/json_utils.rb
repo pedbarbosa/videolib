@@ -14,9 +14,7 @@ def read_json(file)
 end
 
 def write_file(file, contents)
-  File.open("#{file}.tmp", 'w') do |f|
-    f.write(contents)
-  end
+  File.write("#{file}.tmp", contents)
   FileUtils.cp("#{file}.tmp", file)
   FileUtils.remove("#{file}.tmp")
 rescue Interrupt

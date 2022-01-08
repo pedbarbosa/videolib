@@ -6,7 +6,8 @@ require_relative '../adapters/mediainfo'
 class MediaScanner
   def scan_media_file(file_path, show)
     media = scan_with_symlink(file_path)
-    scan_format(media, show)
+    file_mtime = File.mtime(file_path).to_i
+    scan_format(media, show, file_mtime)
   end
 
   def scan_with_symlink(file_path)
@@ -18,13 +19,14 @@ class MediaScanner
 
   private
 
-  def scan_format(media, show)
+  def scan_format(media, show, file_mtime)
     [
       show: show,
       codec: media.codec,
       width: media.width,
       height: media.height,
-      size: media.size
+      size: media.size,
+      mtime: file_mtime
     ]
   end
 end

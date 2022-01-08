@@ -28,9 +28,6 @@ class VideoLibrary
         next unless @config['video_extensions'].include? File.extname(file)
 
         file_path = "#{@config['scan_path']}#{show}/#{file}"
-        episodes[file_path.to_sym] = scan_media_if_new_or_changed(file_path, show)
-        write_temporary_cache(episodes)
-
         scan_result = scan_media_if_new_or_changed(file_path, show)
         unless scan_result.nil?
           episodes[file_path.to_sym] = scan_result
@@ -46,17 +43,25 @@ class VideoLibrary
 
   private
 
+  def file_mtime_unchanged?(file_path)
+    File.mtime(file_path).to_i == @cache[file_path].first['mtime']
+  end
+
   def file_size_unchanged?(file_path)
     File.size(file_path) == @cache[file_path].first['size']
   end
 
+  def scan_new_or_changed_media(file_path, show)
+    @new_scans += 1
+    scanner = MediaScanner.new
+    scanner.scan_media_file(file_path, show)
+  end
+
   def scan_media_if_new_or_changed(file_path, show)
-    if @cache[file_path] && file_size_unchanged?(file_path)
+    if @cache[file_path] && file_size_unchanged?(file_path) && file_mtime_unchanged?(file_path)
       @cache[file_path]
     else
-      @new_scans += 1
-      scanner = MediaScanner.new
-      scanner.scan_media_file(file_path, show)
+      scan_new_or_changed_media(file_path, show)
     end
   end
 

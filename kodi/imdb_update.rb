@@ -87,7 +87,7 @@ def start_scan
   start = ENV['START'] ? ENV['START'].to_i : 0
   limit = ENV['LIMIT'] ? ENV['LIMIT'].to_i : 20
   mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id' \
-              " from movie_view ORDER BY idMovie DESC LIMIT #{start},#{limit};"
+                " from movie_view ORDER BY idMovie DESC LIMIT #{start},#{limit};"
 
   mysql_client = MySQL2Helper.new(@config)
   results = mysql_client.query(mysql_query)
