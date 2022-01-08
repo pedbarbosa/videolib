@@ -11,6 +11,7 @@ def media_sample
 
   { codec: 'V_MPEG4/ISO/AVC',
     height: 320,
+    mtime: 1641664874,
     show: 'test',
     size: 176_123,
     width: 560 }
