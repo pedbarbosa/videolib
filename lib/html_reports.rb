@@ -123,7 +123,7 @@ def create_html_report
 
   return unless @config['recode_report']
 
-  recode_report = RecodeReport.new(config: @config, recode: recode)
+  recode_report = RecodeReport.new(config: @config, recode:)
   recode_report.generate
 end
 

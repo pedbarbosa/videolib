@@ -20,9 +20,6 @@ end
 
 def fetch_page(link)
   @imdb_page = Nokogiri::HTML(URI.parse(link).open)
-rescue OpenURI::HTTPError => e
-  puts "ERROR: #{e} - #{link}"
-  abort
 end
 
 def imdb_title
@@ -72,13 +69,18 @@ end
 def process_title(title)
   id = title['imdb_id']
   update = '(N/C)'
-  fetch_page("http://www.imdb.com/title/#{id}/ratings/?ref_=tt_ov_rt")
+  link = "http://www.imdb.com/title/#{id}/ratings/?ref_=tt_ov_rt"
+  fetch_page(link)
   if (title['rating'] != imdb_rating) || (title['votes'] != imdb_votes)
     update_database_entry(title)
     update = title_update(title)
   end
   title_line(title, update)
   title_mismatch_warn(title) if title['title'] != imdb_title
+rescue OpenURI::HTTPError => e
+  puts "ERROR: #{e} when trying to read #{link} for '#{title['title']}'"
+rescue NoMethodError => e
+  puts "ERROR: #{e} when trying to process '#{title['title']}'"
 end
 
 def start_scan

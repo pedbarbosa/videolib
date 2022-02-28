@@ -4,7 +4,7 @@ require 'ruby-progressbar'
 
 def progressbar_create(operation, total)
   ProgressBar.create(format: "#{operation} %t |%b>%i| %c/%C",
-                     title: '...                      ', starting_at: 0, total: total)
+                     title: '...                      ', starting_at: 0, total:)
 end
 
 def progressbar_title(title)

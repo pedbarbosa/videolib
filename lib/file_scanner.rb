@@ -22,7 +22,7 @@ class FileScanner
 
   def scan_format(media, show)
     [
-      show: show,
+      show:,
       codec: media.codec,
       width: media.width,
       height: media.height,
