@@ -8,7 +8,7 @@ require 'yaml'
 require_relative 'helpers/mysql2'
 
 def load_configuration
-  config_file = "#{ENV['HOME']}/.imdb_update.yml"
+  config_file = "#{Dir.home}/.imdb_update.yml"
 
   unless File.file?(config_file)
     puts "'#{config_file}' is missing, please check the README file!"

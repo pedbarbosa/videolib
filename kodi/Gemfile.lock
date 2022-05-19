@@ -2,8 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     colorize (0.8.1)
-    mysql2 (0.5.3)
-    nokogiri (1.13.5-x86_64-linux)
+    mysql2 (0.5.4)
+    nokogiri (1.13.6-x86_64-linux)
       racc (~> 1.4)
     racc (1.6.0)
 
