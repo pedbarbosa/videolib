@@ -56,8 +56,8 @@ def title_update(title)
 end
 
 def title_mismatch_warn(title)
-  puts "#{title_id_badge(title)} #{'WARN:'.yellow}"\
-       " Title mismatch between '#{title['title']}' (Kodi) and '#{imdb_title}' (IMDB)"
+  puts "#{title_id_badge(title)} #{'WARN:'.yellow} " \
+       "Title mismatch between '#{title['title']}' (Kodi) and '#{imdb_title}' (IMDB)"
 end
 
 def update_database_entry(title)
@@ -88,8 +88,8 @@ def start_scan
 
   start = ENV['START'] ? ENV['START'].to_i : 0
   limit = ENV['LIMIT'] ? ENV['LIMIT'].to_i : 20
-  mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id' \
-                " from movie_view ORDER BY idMovie DESC LIMIT #{start},#{limit};"
+  mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id ' \
+                "from movie_view ORDER BY idMovie DESC LIMIT #{start},#{limit};"
 
   mysql_client = MySQL2Helper.new(@config)
   results = mysql_client.query(mysql_query)
