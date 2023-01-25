@@ -14,8 +14,8 @@ class RecodeReport
     total_count = 0
     total_size = 0
 
-    @recode.sort.each do |file, show, codec, height, size|
-      html_table += recode_row(codec, height, bytes_to_mb(size), show, file) unless override_show?(show)
+    @recode.sort.each do |file, show, codec, height, size, mtime|
+      html_table += recode_row(codec, height, bytes_to_mb(size), show, file, mtime) unless override_show?(show)
       total_count += 1
       total_size += size
     end
@@ -40,7 +40,7 @@ class RecodeReport
     size / 1024 / 1024
   end
 
-  def recode_row(codec, height, size, show, file)
+  def recode_row(codec, height, size, show, file, mtime)
     erb = ERB.new(File.read('templates/recode_row.html.erb'))
     erb.result(binding)
   end

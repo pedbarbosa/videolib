@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'date'
 require 'erb'
 require_relative 'recode_report'
 require_relative '../lib/json_utils'
@@ -92,11 +93,12 @@ def create_html_report
     height = track_resolution(episode.first['height'], file)
     size = episode.first['size']
     codec = determine_or_override_codec_to_x265(episode)
+    mtime = Time.at(episode.first['mtime']).strftime('%Y-%m-%d %H:%M')
 
     if codec == 'x265'
       shows[show].first['x265_episodes'] += 1
     else
-      recode << [file, show, codec, height, size]
+      recode << [file, show, codec, height, size, mtime]
     end
 
     format = show_format(codec, height)
