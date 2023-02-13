@@ -3,7 +3,7 @@ GEM
   specs:
     colorize (0.8.1)
     mysql2 (0.5.5)
-    nokogiri (1.14.0-x86_64-linux)
+    nokogiri (1.14.2-x86_64-linux)
       racc (~> 1.4)
     racc (1.6.2)
 
@@ -16,4 +16,4 @@ DEPENDENCIES
   nokogiri
 
 BUNDLED WITH
-   2.4.5
+   2.4.6
