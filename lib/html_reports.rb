@@ -20,7 +20,7 @@ end
 def codec_badge(codec)
   if available_codecs.include?(codec)
     available_codecs[codec]
-  elsif /MPEG/.match?(codec)
+  elsif codec.include?('MPEG')
     'mpeg'
   else
     raise InvalidCodec
