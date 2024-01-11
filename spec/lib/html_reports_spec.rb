@@ -73,6 +73,23 @@ describe 'lib/html_reports.rb test' do
     expect(report_row('abc', 123, report))
       .to match(/<td class='left'>abc.*<td>123.*<progress max="7" value="0">/m)
   end
+
+  it 'Test report_summary' do
+    total_x265 = 1
+    episodes = [
+      { 'show' => 'foo', 'codec' => 'x265' },
+      { 'show' => 'bar', 'codec' => 'x264' }
+    ]
+
+    shows = [
+      { 'show_size' => 100, 'episodes' => 1 },
+      { 'show_size' => 200, 'episodes' => 2 }
+    ]
+    total_size = 1024
+
+    expect(report_summary(total_x265, episodes, shows, total_size))
+      .to match 'Scanned 2 shows with 2 episodes (1 in x265 format - 50.0%). 1 GB in total'
+  end
 end
 # rubocop:enable Metrics/BlockLength
 
