@@ -16,7 +16,10 @@ describe RecodeReport do
       'recode_report' => recode_report,
       'recode_cp_target' => '/foo'
     },
-    recode: [['a', 'b', 'c', 'x', 1], ['e', 'f', 'g', 'h', 2]]
+    recode: [
+      { file: 'a.mkv', size: 123 },
+      { file: 'b.mkv', size: 456 }
+    ]
   }
 
   subject(:test) { described_class.new(params) }
