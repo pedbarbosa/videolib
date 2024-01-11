@@ -7,6 +7,11 @@ require 'open-uri'
 require 'yaml'
 require_relative 'helpers/mysql2'
 
+def initialise
+  load_configuration
+  set_start_and_limit
+end
+
 def load_configuration
   config_file = "#{Dir.home}/.imdb_update.yml"
 
@@ -15,7 +20,12 @@ def load_configuration
     exit 1
   end
 
-  YAML.load_file(config_file)
+  @config = YAML.load_file(config_file)
+end
+
+def set_start_and_limit
+  @start = ENV['START'] ? ENV['START'].to_i : 0
+  @limit = ENV['LIMIT'] ? ENV['LIMIT'].to_i : 20
 end
 
 def fetch_page(link)
@@ -60,6 +70,14 @@ def title_mismatch_warn(title)
        "Title mismatch between '#{title['title']}' (Kodi) and '#{imdb_title}' (IMDB)"
 end
 
+def retrieve_movie_list
+  mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id ' \
+                "from movie_view ORDER BY idMovie DESC LIMIT #{@start},#{@limit};"
+
+  mysql_client = MySQL2Helper.new(@config)
+  mysql_client.query(mysql_query)
+end
+
 def update_database_entry(title)
   mysql_query = "UPDATE movie_view SET rating='#{imdb_rating}', votes='#{imdb_votes}' WHERE idMovie='#{title['id']}';"
   mysql_client = MySQL2Helper.new(@config)
@@ -67,9 +85,8 @@ def update_database_entry(title)
 end
 
 def process_title(title)
-  id = title['imdb_id']
   update = '(N/C)'
-  link = "http://www.imdb.com/title/#{id}/ratings/?ref_=tt_ov_rt"
+  link = "http://www.imdb.com/title/#{title['imdb_id']}/ratings/?ref_=tt_ov_rt"
   fetch_page(link)
   if (title['rating'] != imdb_rating) || (title['votes'] != imdb_votes)
     update_database_entry(title)
@@ -84,16 +101,7 @@ rescue NoMethodError => e
 end
 
 def start_scan
-  @config = load_configuration
-
-  start = ENV['START'] ? ENV['START'].to_i : 0
-  limit = ENV['LIMIT'] ? ENV['LIMIT'].to_i : 20
-  mysql_query = 'SELECT idMovie as id, c00 as title, votes, rating, premiered, uniqueid_value as imdb_id ' \
-                "from movie_view ORDER BY idMovie DESC LIMIT #{start},#{limit};"
-
-  mysql_client = MySQL2Helper.new(@config)
-  results = mysql_client.query(mysql_query)
-
+  results = retrieve_movie_list
   puts "Checking IMDB ratings for #{results.count} titles in Kodi"
 
   results.each_slice(@config['max_threads']) do |slice|
@@ -106,4 +114,5 @@ def start_scan
   end
 end
 
+initialise
 start_scan
