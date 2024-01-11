@@ -13,7 +13,15 @@ def read_json(file)
   end
 end
 
+def create_directory_if_missing(file)
+  return if File.directory?(File.dirname(file))
+
+  FileUtils.mkdir_p(File.dirname(file))
+end
+
 def write_file(file, contents)
+  create_directory_if_missing(file)
+
   File.write("#{file}.tmp", contents)
   FileUtils.cp("#{file}.tmp", file)
   FileUtils.remove("#{file}.tmp")

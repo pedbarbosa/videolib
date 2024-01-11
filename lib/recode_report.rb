@@ -14,11 +14,12 @@ class RecodeReport
     total_count = 0
     total_size = 0
 
-    @recode.sort.each do |file, show, codec, height, size, mtime|
-      html_table += recode_row(codec, height, bytes_to_mb(size), show, file, mtime) unless override_show?(show)
+    @recode.each do |episode|
+      html_table += recode_row(episode) unless override_show?(episode[:show])
       total_count += 1
-      total_size += size
+      total_size += episode[:size]
     end
+
     html_table += recode_totals(total_count, bytes_to_mb(total_size))
 
     recode_report = generate_html(html_table)
@@ -40,7 +41,8 @@ class RecodeReport
     size / 1024 / 1024
   end
 
-  def recode_row(codec, height, size, show, file, mtime)
+  def recode_row(episode)
+    size_in_mb = bytes_to_mb(episode[:size])
     erb = ERB.new(File.read('templates/recode_row.html.erb'))
     erb.result(binding)
   end
