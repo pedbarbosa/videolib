@@ -26,10 +26,14 @@ recode_report:
   # Location for the HTML recode report
   '/tmp/recode.html'
 
+copy_override:
+  # List of shows to ignore copying for recoding
+  ['this_one', 'that_one']
+
 recode_cp_target:
   # Where to copy files that require recoding
   '/tmp/recode/'
 
 recode_disk:
   # Detect if recode destination media is mounted
-  '/tmp/'
+  '/tmp/media/'
