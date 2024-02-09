@@ -81,6 +81,14 @@ def determine_or_override_codec_to_x265(value)
   @config['codec_override'].include?(value.first['show']) ? 'x265' : codec_badge(value.first['codec'])
 end
 
+def report_summary(total_x265, episodes, shows, total_size)
+  x265_pct = ((total_x265.to_f * 100) / episodes.count).round(2)
+  total_stats = "Scanned #{shows.count} shows with #{episodes.count} episodes (#{total_x265} in x265 format "
+  total_stats += "- #{x265_pct}%). #{total_size / 1024} GB in total"
+  puts "Finished full directory scan. #{total_stats}"
+  total_stats
+end
+
 def create_html_report
   episodes = read_json(@config['json_file'])
   html_table = ''
@@ -98,7 +106,7 @@ def create_html_report
     if codec == 'x265'
       shows[show].first['x265_episodes'] += 1
     else
-      recode << [file, show, codec, height, size, mtime]
+      recode << { file:, show:, codec:, height:, size:, mtime: }
     end
 
     format = show_format(codec, height)
@@ -108,18 +116,14 @@ def create_html_report
   end
 
   total_x265 = total_size = 0
-  shows.sort.each do |show, name|
-    show_size = name.first['show_size'] / 1024 / 1024
+  shows.sort.each do |show, details|
+    show_size = details.first['show_size'] / 1024 / 1024
     total_size += show_size
-    total_x265 += name.first['x265_episodes']
-    html_table += report_row(show, show_size, name.first)
+    total_x265 += details.first['x265_episodes']
+    html_table += report_row(show, show_size, details.first)
   end
 
-  x265_pct = ((total_x265.to_f * 100) / episodes.count).round(2)
-  total_stats = "Scanned #{shows.count} shows with #{episodes.count} episodes (#{total_x265} in x265 format "
-  total_stats += "- #{x265_pct}%). #{total_size / 1024} GB in total"
-  puts "Finished full directory scan. #{total_stats}"
-
+  total_stats = report_summary(total_x265, episodes, shows, total_size)
   erb = ERB.new(File.read('templates/report.html.erb'))
   write_file(@config['html_report'], erb.result(binding))
 
@@ -129,23 +133,10 @@ def create_html_report
   recode_report.generate
 end
 
-def report_row(show, show_size, name)
+def report_row(show, show_size, details)
   erb = ERB.new(File.read('templates/report_row.html.erb'))
   erb.result(binding)
 end
-
-# TODO: Determine where to place this function
-# def copy_files(files_to_copy, target, disk)
-#   files_to_copy.each do |file|
-#     next if File.exist?("#{target}/#{file}")
-#
-#     diskspace = `df -m #{disk}`.split(/\b/)[24].to_i
-#     raise "ERROR: File copy stopped, #{disk} is almost full." unless diskspace > 10_000
-#
-#     puts "Copying #{file} to #{target} ..."
-#     FileUtils.cp(file, target)
-#   end
-# end
 
 class InvalidCodec < StandardError
 end
