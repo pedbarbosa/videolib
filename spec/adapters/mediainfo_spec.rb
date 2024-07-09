@@ -16,25 +16,25 @@ describe MediaInfoAdapter do
     media = described_class.new('/tmp/videolib_sample.mkv')
 
     describe '::codec' do
-      it 'should return the codec of the video' do
+      it 'returns the codec of the video' do
         expect(media.codec).to eq sample[:codec]
       end
     end
 
     describe '::width' do
-      it 'should return the width of the video' do
+      it 'returns the width of the video' do
         expect(media.width).to eq sample[:width]
       end
     end
 
     describe '::height' do
-      it 'should return the height of the video' do
+      it 'returns the height of the video' do
         expect(media.height).to eq sample[:height]
       end
     end
 
     describe '::size' do
-      it 'should return the size of the video' do
+      it 'returns the size of the video' do
         expect(media.size).to eq sample[:size]
       end
     end

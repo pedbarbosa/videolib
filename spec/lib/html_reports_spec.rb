@@ -1,9 +1,17 @@
 # frozen_string_literal: true
 
-require_relative '../../lib/html_reports'
-
 # rubocop:disable Metrics/BlockLength
-describe 'lib/html_reports.rb test' do
+describe 'lib/html_reports.rb' do
+  before do
+    @show = [
+      {
+        'show_size' => 100,
+        'episodes' => 10,
+        'codec_resolution' => 5
+      }
+    ]
+  end
+
   it 'Test codec override' do
     @config = { 'codec_override' => ['foo'] }
     expect(determine_or_override_codec_to_x265([{ 'show' => 'foo', 'codec' => 'XVID' }])).to eql('x265')
@@ -37,15 +45,6 @@ describe 'lib/html_reports.rb test' do
     expect(episode_badge_test('x264_720p', 'x264_sd')).to eql('Mix')
   end
 
-  before do
-    @show = [
-      {
-        'show_size' => 100,
-        'episodes' => 10,
-        'codec_resolution' => 5
-      }
-    ]
-  end
   it 'Test increment_counters' do
     allow(increment_counters(@show, 'codec_resolution', 100))
     expect(@show).to eq([

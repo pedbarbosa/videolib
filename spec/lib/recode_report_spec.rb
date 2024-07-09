@@ -3,8 +3,8 @@
 require_relative '../../lib/recode_report'
 
 describe RecodeReport do
-  it 'should fail if no params are provided' do
-    RecodeReport.new
+  it 'fails if no params are provided' do
+    described_class.new
   rescue ArgumentError => e
     expect(e.message).to eq('wrong number of arguments (given 0, expected 1)')
   end
