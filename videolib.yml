@@ -20,11 +20,11 @@ codec_override:
 
 html_report:
   # Location for the HTML report
-  '/tmp/index.html'
+  'report/index.html'
 
 recode_report:
   # Location for the HTML recode report
-  '/tmp/recode.html'
+  'report/recode.html'
 
 copy_override:
   # List of shows to ignore copying for recoding
@@ -37,3 +37,7 @@ recode_cp_target:
 recode_disk:
   # Detect if recode destination media is mounted
   '/tmp/media/'
+
+debug:
+  # Be more verbose for troubleshooting purposes
+  false

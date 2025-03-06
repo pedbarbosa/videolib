@@ -10,6 +10,7 @@ def available_codecs
     'HEVC' => 'x265',
     'V_MPEGH/ISO/HEVC' => 'x265',
     'hev1' => 'x265',
+    'hvc1' => 'x265',
     'AVC' => 'x264',
     'avc1' => 'x264',
     'V_MPEG4/ISO/AVC' => 'x264',
