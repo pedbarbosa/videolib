@@ -52,15 +52,21 @@ class VideoLibrary
   end
 
   def scan_new_or_changed_media(file_path, show)
-    @new_scans += 1
     scanner = MediaScanner.new
-    scanner.scan_media_file(file_path, show)
+    puts "Scanning '#{file_path}' ..." if @config['debug']
+    result = scanner.scan_media_file(file_path, show)
+    @new_scans += 1
+    result
+  rescue MediaInfoAdapter::CorruptedFile
+    puts "ERROR: File '#{file_path}' seems corrupted, please check!"
   end
 
   def scan_media_if_new_or_changed(file_path, show)
     if @cache[file_path] && file_size_unchanged?(file_path) && file_mtime_unchanged?(file_path)
+      puts "File '#{file_path}' hasn't changed" if @config['debug']
       @cache[file_path]
     else
+      puts "File '#{file_path}' is new or has changed, scanning ..." if @config['debug']
       scan_new_or_changed_media(file_path, show)
     end
   end

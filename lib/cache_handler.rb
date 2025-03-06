@@ -16,6 +16,8 @@ module CacheHandler
   end
 
   def write_temporary_cache(episodes)
-    write_json("#{@config['json_file']}.tmp", episodes) if !@new_scans.zero? && (@new_scans % 50).zero?
+    return unless !@new_scans.zero? && (@new_scans % 20).zero?
+
+    write_json("#{@config['json_file']}.tmp", episodes)
   end
 end
