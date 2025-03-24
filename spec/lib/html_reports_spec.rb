@@ -22,6 +22,7 @@ describe 'lib/html_reports.rb' do
     expect(codec_badge('HEVC')).to eql('x265')
     expect(codec_badge('V_MPEGH/ISO/HEVC')).to eql('x265')
     expect(codec_badge('hev1')).to eql('x265')
+    expect(codec_badge('hvc1')).to eql('x265')
     expect(codec_badge('AVC')).to eql('x264')
     expect(codec_badge('V_MPEG4/ISO/AVC')).to eql('x264')
     expect(codec_badge('MPEG something')).to eql('mpeg')
