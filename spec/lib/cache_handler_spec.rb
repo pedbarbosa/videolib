@@ -76,15 +76,12 @@ describe CacheHandler do
     end
 
     context 'when new_scans is not a multiple of 20' do
-      before do
-        dummy_instance.new_scans = 15
-      end
+      let(:dummy_instance) { instance_spy(DummyClass, config: { 'json_file' => json_file }, new_scans: 15) }
 
       it 'does not write temporary cache' do
-        expect(dummy_instance).not_to receive(:write_json)
         dummy_instance.send(:write_temporary_cache, episodes)
+        expect(dummy_instance).not_to have_received(:write_json)
       end
     end
   end
 end
-

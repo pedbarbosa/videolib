@@ -13,13 +13,13 @@ describe 'lib/html_reports.rb' do
     allow($stdout).to receive(:puts)
   end
 
-  it 'Test codec override' do
+  it 'returns the correct codec when show is overridden' do
     @config = { 'codec_override' => ['foo'] }
     expect(determine_or_override_codec_to_x265([{ 'show' => 'foo', 'codec' => 'XVID' }])).to eql('x265')
     expect(determine_or_override_codec_to_x265([{ 'show' => 'bar', 'codec' => 'XVID' }])).to eql('mpeg')
   end
 
-  it 'Test codec_badge output' do
+  it 'outputs the correct codec_badge' do
     expect(codec_badge('HEVC')).to eql('x265')
     expect(codec_badge('V_MPEGH/ISO/HEVC')).to eql('x265')
     expect(codec_badge('hev1')).to eql('x265')
@@ -27,27 +27,27 @@ describe 'lib/html_reports.rb' do
     expect(codec_badge('AVC')).to eql('x264')
     expect(codec_badge('V_MPEG4/ISO/AVC')).to eql('x264')
     expect(codec_badge('MPEG something')).to eql('mpeg')
+  end
 
+  it 'fails if codec_badge is invalid' do
     expect { codec_badge('123') }.to raise_error(InvalidCodec)
   end
 
-  it 'Test track_resolution output' do
-    # TODO: Check how to process stdout
-    # STDOUT.should_receive(:puts).with("> Couldn't process test resolution, setting to 'SD'!")
+  it 'outputs the closest standard video resolution' do
     expect(track_resolution(nil, 'test')).to eql('sd')
     expect(track_resolution(500, 'test')).to eql('sd')
     expect(track_resolution(700, 'test')).to eql('720p')
     expect(track_resolution(800, 'test')).to eql('1080p')
   end
 
-  it 'Test episode_badge output' do
+  it 'outputs the correct resolution for a preset badge' do
     expect(episode_badge_test('x265_1080p', 'x264_1080p')).to eql('1080p')
     expect(episode_badge_test('x265_720p', 'x264_720p')).to eql('720p')
     expect(episode_badge_test('x265_sd', 'x264_sd')).to eql('SD')
     expect(episode_badge_test('x264_720p', 'x264_sd')).to eql('Mix')
   end
 
-  it 'Test increment_counters' do
+  it 'increments the counter for a show' do
     allow(increment_counters(@show, 'codec_resolution', 100))
     expect(@show).to eq([
                           {
@@ -58,15 +58,17 @@ describe 'lib/html_reports.rb' do
                         ])
   end
 
-  it 'Test show_format' do
+  it 'raises error if codec or height are invalid' do
     expect { show_format('', '') }.to raise_error InvalidCodec
     expect { show_format('', '1080p') }.to raise_error InvalidCodec
     expect { show_format('x265', '') }.to raise_error InvalidHeight
+  end
 
+  it 'returns the correct badge for a show' do
     expect(show_format('x265', '1080p')).to eq('x265_1080p')
   end
 
-  it 'Test report_row' do
+  it 'creates report_row correctly' do
     report = new_show.first
     report['show_size'] = 123
     report['episodes'] = 7
@@ -75,7 +77,7 @@ describe 'lib/html_reports.rb' do
       .to match(/<td class='left'>abc.*<td>123.*<progress max="7" value="0">/m)
   end
 
-  it 'Test report_summary' do
+  it 'generates report_summary correctly' do
     total_x265 = 1
     episodes = [
       { 'show' => 'foo', 'codec' => 'x265' },

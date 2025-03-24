@@ -47,9 +47,10 @@ describe ConfigHandler do
     context 'when scan_path is not a valid directory' do
       it 'raises an InvalidScanDirectory error' do
         allow(File).to receive(:directory?).with('/invalid/path').and_return(false)
-        expect { dummy_instance.send(:validate_path, config_file, '/invalid/path') }.to raise_error(ConfigHandler::InvalidScanDirectory)
+        expect do
+          dummy_instance.send(:validate_path, config_file, '/invalid/path')
+        end.to raise_error(ConfigHandler::InvalidScanDirectory)
       end
     end
   end
 end
-
