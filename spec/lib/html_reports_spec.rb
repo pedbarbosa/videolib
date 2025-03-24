@@ -10,6 +10,7 @@ describe 'lib/html_reports.rb' do
         'codec_resolution' => 5
       }
     ]
+    allow($stdout).to receive(:puts)
   end
 
   it 'Test codec override' do
