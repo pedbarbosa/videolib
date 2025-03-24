@@ -15,7 +15,6 @@ describe RecodeReport do
       { file: 'b.mkv', size: 456 }
     ]
   }
-
   subject(:test) { described_class.new(params) }
 
   it 'fails if no params are provided' do
