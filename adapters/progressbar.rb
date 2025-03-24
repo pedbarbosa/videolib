@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 require 'ruby-progressbar'
+require 'ruby-progressbar/outputs/null'
 
-def progressbar_create(operation, total)
+def progressbar_create(operation, total, output = $stdout)
   ProgressBar.create(format: "#{operation} %t |%b>%i| %c/%C",
-                     title: '...                      ', starting_at: 0, total:)
+                     title: '...                      ',
+                     starting_at: 0,
+                     total:,
+                     output:)
 end
 
 def progressbar_title(title)
