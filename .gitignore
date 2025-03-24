@@ -6,6 +6,5 @@
 coverage/
 
 # videolib
-report/
 videolib.json*
 report/
