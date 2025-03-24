@@ -19,13 +19,20 @@ describe 'lib/html_reports.rb' do
     expect(determine_or_override_codec_to_x265([{ 'show' => 'bar', 'codec' => 'XVID' }])).to eql('mpeg')
   end
 
-  it 'outputs the correct codec_badge' do
+  it 'outputs the codec_badge x265' do
     expect(codec_badge('HEVC')).to eql('x265')
     expect(codec_badge('V_MPEGH/ISO/HEVC')).to eql('x265')
     expect(codec_badge('hev1')).to eql('x265')
     expect(codec_badge('hvc1')).to eql('x265')
+    expect(codec_badge('V_AV1')).to eql('x265')
+  end
+
+  it 'outputs the codec_badge x264' do
     expect(codec_badge('AVC')).to eql('x264')
     expect(codec_badge('V_MPEG4/ISO/AVC')).to eql('x264')
+  end
+
+  it 'outputs the codec_badge mpeg' do
     expect(codec_badge('MPEG something')).to eql('mpeg')
   end
 
