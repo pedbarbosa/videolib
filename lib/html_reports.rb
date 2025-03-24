@@ -10,6 +10,8 @@ def available_codecs
     'HEVC' => 'x265',
     'V_MPEGH/ISO/HEVC' => 'x265',
     'hev1' => 'x265',
+    'hvc1' => 'x265',
+    'V_AV1' => 'x265',
     'AVC' => 'x264',
     'avc1' => 'x264',
     'V_MPEG4/ISO/AVC' => 'x264',
@@ -28,17 +30,19 @@ def codec_badge(codec)
 end
 
 def track_resolution(height, filename)
-  if height.nil?
-    # TODO : Provide proper exception handling for this
-    puts "> Couldn't process #{filename} resolution, setting to 'SD'!"
+  raise InvalidHeight, "Invalid height for #{filename}" if height.nil?
+
+  case height
+  when 0...640
     'sd'
-  elsif height < 640
-    'sd'
-  elsif height >= 640 && height < 800
+  when 640..800
     '720p'
-  elsif height >= 800
+  else
     '1080p'
   end
+rescue InvalidHeight => e
+  puts "> #{e.message}, setting to 'SD'!"
+  'sd'
 end
 
 def episode_badge(show)

@@ -37,3 +37,7 @@ recode_cp_target:
 recode_disk:
   # Detect if recode destination media is mounted
   '/tmp/media/'
+
+debug:
+  # Be more verbose for troubleshooting purposes
+  false
