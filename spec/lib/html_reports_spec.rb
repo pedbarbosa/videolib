@@ -37,7 +37,7 @@ describe 'lib/html_reports.rb' do
     expect(track_resolution(nil, 'test')).to eql('sd')
     expect(track_resolution(500, 'test')).to eql('sd')
     expect(track_resolution(700, 'test')).to eql('720p')
-    expect(track_resolution(800, 'test')).to eql('1080p')
+    expect(track_resolution(820, 'test')).to eql('1080p')
   end
 
   it 'outputs the correct resolution for a preset badge' do

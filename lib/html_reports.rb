@@ -29,17 +29,19 @@ def codec_badge(codec)
 end
 
 def track_resolution(height, filename)
-  if height.nil?
-    # TODO : Provide proper exception handling for this
-    puts "> Couldn't process #{filename} resolution, setting to 'SD'!"
+  raise InvalidHeight, "Invalid height for #{filename}" if height.nil?
+
+  case height
+  when 0...640
     'sd'
-  elsif height < 640
-    'sd'
-  elsif height >= 640 && height < 800
+  when 640..800
     '720p'
-  elsif height >= 800
+  else
     '1080p'
   end
+rescue InvalidHeight => e
+  puts "> #{e.message}, setting to 'SD'!"
+  'sd'
 end
 
 def episode_badge(show)
