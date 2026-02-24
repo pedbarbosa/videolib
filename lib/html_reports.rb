@@ -15,6 +15,7 @@ def available_codecs
     'AVC' => 'x264',
     'avc1' => 'x264',
     'V_MPEG4/ISO/AVC' => 'x264',
+    'V_MS/VFW/FOURCC / DIVX' => 'x264',
     'XVID' => 'mpeg'
   }
 end
@@ -49,7 +50,7 @@ def episode_badge(show)
   case show['episodes']
   when show['x265_1080p'] + show['x264_1080p']
     '1080p'
-  when show['x265_720p'] + show['x264_720p'] + show['mpeg_720p']
+  when show['x265_720p'] + show['x264_720p']
     '720p'
   when show['x265_sd'] + show['x264_sd'] + show['mpeg_sd']
     'SD'
@@ -62,8 +63,7 @@ def new_show
   [
     'show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
     'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
-    'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0,
-    'mpeg_1080p' => 0, 'mpeg_720p' => 0, 'mpeg_sd' => 0
+    'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_sd' => 0
   ]
 end
 
