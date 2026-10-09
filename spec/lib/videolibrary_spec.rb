@@ -105,6 +105,18 @@ describe VideoLibrary do
     end
   end
 
+  context 'with a scan_path without a trailing slash' do
+    let(:scan_path) { Dir.mktmpdir }
+
+    before { allow($stdout).to receive(:puts) }
+
+    it 'finds the shows and their episodes', :aggregate_failures do
+      episode = add_file('/Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv')
+      expect(library.send(:scan_tv_shows)).to eq(['Helix'])
+      expect(library.send(:show_episodes, 'Helix')).to eq([episode])
+    end
+  end
+
   describe '#scan_tv_shows' do
     before do
       add_file('Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv')

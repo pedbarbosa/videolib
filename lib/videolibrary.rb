@@ -80,7 +80,7 @@ class VideoLibrary
 
   # Episodes sit in season folders ('<show>/Season 1/'), or directly in the show folder
   def show_episodes(show)
-    show_path = "#{@config['scan_path']}#{show}"
+    show_path = File.join(@config['scan_path'], show)
     Dir.glob('**/*', base: show_path).filter_map do |file|
       file_path = "#{show_path}/#{file}"
       file_path if @config['video_extensions'].include?(File.extname(file)) && File.file?(file_path)
@@ -90,7 +90,7 @@ class VideoLibrary
   def scan_tv_shows
     tv_shows = []
     Dir.foreach(@config['scan_path']) do |dir|
-      next if @config['ignore_folders'].include?(dir) || !File.directory?(@config['scan_path'] + dir)
+      next if @config['ignore_folders'].include?(dir) || !File.directory?(File.join(@config['scan_path'], dir))
 
       tv_shows << dir
     end
