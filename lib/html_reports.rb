@@ -61,9 +61,11 @@ end
 
 def new_show
   [
-    'show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
-    'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
-    'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_sd' => 0
+    {
+      'show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
+      'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
+      'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_sd' => 0
+    }
   ]
 end
 

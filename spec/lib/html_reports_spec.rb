@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/BlockLength
 describe 'lib/html_reports.rb' do
   before do
     @show = [
@@ -101,7 +100,6 @@ describe 'lib/html_reports.rb' do
       .to match 'Scanned 2 shows with 2 episodes (1 in x265 format - 50.0%). 1 GB in total'
   end
 end
-# rubocop:enable Metrics/BlockLength
 
 def episode_badge_test(first, second)
   test = new_show

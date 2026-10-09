@@ -26,12 +26,14 @@ class MediaScanner
 
   def scan_format(media, show, file_mtime)
     [
-      show:,
-      codec: media.codec,
-      width: media.width,
-      height: media.height,
-      size: media.size,
-      mtime: file_mtime
+      {
+        show:,
+        codec: media.codec,
+        width: media.width,
+        height: media.height,
+        size: media.size,
+        mtime: file_mtime
+      }
     ]
   end
 end
