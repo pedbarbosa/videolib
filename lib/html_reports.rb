@@ -104,7 +104,7 @@ def determine_or_override_codec_to_x265(value)
 end
 
 def report_summary(total_x265, episodes, shows, total_size)
-  x265_pct = ((total_x265.to_f * 100) / episodes.count).round(2)
+  x265_pct = episodes.empty? ? 0.0 : ((total_x265.to_f * 100) / episodes.count).round(2)
   total_stats = "Scanned #{shows.count} shows with #{episodes.count} episodes (#{total_x265} in x265 format "
   total_stats += "- #{x265_pct}%). #{total_size / 1024} GB in total"
   puts "Finished full directory scan. #{total_stats}"

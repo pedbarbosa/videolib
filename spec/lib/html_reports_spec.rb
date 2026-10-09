@@ -121,6 +121,11 @@ describe 'lib/html_reports.rb' do
       .to match 'Scanned 2 shows with 2 episodes (1 in x265 format - 50.0%). 1 GB in total'
   end
 
+  it 'generates report_summary for an empty library' do
+    expect(report_summary(0, {}, {}, 0))
+      .to eq 'Scanned 0 shows with 0 episodes (0 in x265 format - 0.0%). 0 GB in total'
+  end
+
   describe '#create_html_report' do
     let(:out_dir) { Dir.mktmpdir }
     let(:config) do
