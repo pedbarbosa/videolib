@@ -68,6 +68,43 @@ describe VideoLibrary do
     end
   end
 
+  describe '#scan_new_or_changed_media' do
+    it 'reports a corrupted file instead of failing' do
+      file_path = add_file('Helix/Season 1/Helix - S01E02 - Broken HDTV-720p.mkv')
+      File.write(file_path, 'not a video')
+      expect { library.send(:scan_new_or_changed_media, file_path, 'Helix') }
+        .to output(/ERROR: File '#{Regexp.escape(file_path)}' seems corrupted/).to_stdout
+    end
+  end
+
+  describe '#scan' do
+    subject(:library) { described_class.new }
+
+    let(:home) { Dir.mktmpdir }
+    let(:config) do
+      super().merge('json_file' => "#{home}/videolib.json", 'html_report' => "#{home}/report/index.html",
+                    'codec_override' => [])
+    end
+
+    before do
+      add_file('Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv')
+      add_file('Helix/Season 2/Helix - S02E13 - O Brave New World HDTV-720p.mkv')
+      File.write("#{home}/.videolib.yml", config.to_yaml)
+      allow(Dir).to receive(:home).and_return(home)
+    end
+
+    after { FileUtils.rm_rf(home) }
+
+    it 'caches and reports the episodes in season folders', :aggregate_failures do
+      expect { library.scan }.to output(/Scanned 1 shows with 2 episodes/).to_stdout
+      expect(read_json(config['json_file']).keys).to contain_exactly(
+        "#{scan_path}Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv",
+        "#{scan_path}Helix/Season 2/Helix - S02E13 - O Brave New World HDTV-720p.mkv"
+      )
+      expect(File.read(config['html_report'])).to include("<td class='left'>Helix</td>")
+    end
+  end
+
   describe '#scan_tv_shows' do
     before do
       add_file('Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv')

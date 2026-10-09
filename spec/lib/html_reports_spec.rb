@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'tmpdir'
+require_relative '../../lib/html_reports'
+
 describe 'lib/html_reports.rb' do
   let(:show) { [{ 'show_size' => 100, 'episodes' => 10, 'codec_resolution' => 5 }] }
 
@@ -78,6 +81,57 @@ describe 'lib/html_reports.rb' do
 
     expect(report_summary(1, episodes, shows, 1024))
       .to match 'Scanned 2 shows with 2 episodes (1 in x265 format - 50.0%). 1 GB in total'
+  end
+
+  describe '#create_html_report' do
+    let(:out_dir) { Dir.mktmpdir }
+    let(:config) do
+      { 'json_file' => "#{out_dir}/videolib.json", 'html_report' => "#{out_dir}/index.html",
+        'recode_report' => "#{out_dir}/recode.html", 'codec_override' => [], 'copy_override' => [] }
+    end
+
+    def cached_episode(show, codec, height)
+      [{ 'show' => show, 'codec' => codec, 'height' => height, 'size' => 1_073_741_824, 'mtime' => 1_700_000_000 }]
+    end
+
+    before do
+      @config = config
+      episodes = {
+        '/tv/Helix/Season 1/Helix - S01E01.mkv' => cached_episode('Helix', 'HEVC', 1080),
+        '/tv/Helix/Season 2/Helix - S02E13.mkv' => cached_episode('Helix', 'AVC', 720),
+        '/tv/Other/Other - S01E01.mkv' => cached_episode('Other', 'XVID', 480),
+        '/tv/Broken/Broken - S01E01.mkv' => cached_episode('Broken', 'bogus', 1080)
+      }
+      write_json(config['json_file'], episodes)
+      create_html_report
+    end
+
+    after { FileUtils.rm_rf(out_dir) }
+
+    it 'writes a row per show and the totals', :aggregate_failures do
+      report = File.read(config['html_report'])
+      expect(report).to include("<td class='left'>Helix</td>", "<td class='left'>Other</td>")
+      expect(report).to include('Scanned 3 shows with 4 episodes (1 in x265 format - 25.0%). 3 GB in total')
+    end
+
+    it 'lists the episodes that are not x265 for recoding', :aggregate_failures do
+      recode = File.read(config['recode_report'])
+      expect(recode).to include('Helix - S02E13.mkv', 'Other - S01E01.mkv')
+      expect(recode).not_to include('Helix - S01E01.mkv')
+    end
+
+    it 'reports episodes with an invalid codec' do
+      expect($stdout).to have_received(:puts)
+        .with("Invalid codec 'bogus' detected on '/tv/Broken/Broken - S01E01.mkv'!")
+    end
+
+    context 'without a recode report configured' do
+      let(:config) { super().except('recode_report') }
+
+      it 'only writes the HTML report' do
+        expect(Dir.children(out_dir)).to contain_exactly('videolib.json', 'index.html')
+      end
+    end
   end
 end
 

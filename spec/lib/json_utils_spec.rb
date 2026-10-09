@@ -15,6 +15,16 @@ describe 'lib/json_utils.rb test' do
     expect(read_json(test_file)).to eq(test_hash)
   end
 
+  it 'creates the directory it writes to' do
+    write_json("#{test_dir}/new/test.json", test_hash)
+    expect(read_json("#{test_dir}/new/test.json")).to eq(test_hash)
+  end
+
+  it 'reports an interrupt instead of raising it' do
+    allow(File).to receive(:write).and_raise(Interrupt)
+    expect { write_json(test_file, test_hash) }.to output(/Caught an interrupt request/).to_stdout
+  end
+
   it 'reads a missing file as empty' do
     expect(read_json("#{test_dir}/missing.json")).to eq({})
   end

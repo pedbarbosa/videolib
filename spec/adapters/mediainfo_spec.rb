@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'tmpdir'
 require_relative '../media_sample'
 require_relative '../../adapters/mediainfo'
 
@@ -37,6 +38,18 @@ describe MediaInfoAdapter do
       it 'returns the size of the video' do
         expect(media.size).to eq sample[:size]
       end
+    end
+  end
+
+  context 'with a file that has no video track' do
+    let(:file_path) { File.join(Dir.mktmpdir, 'not_a_video.mkv') }
+
+    before { File.write(file_path, 'not a video') }
+    after { FileUtils.rm_rf(File.dirname(file_path)) }
+
+    it 'raises CorruptedFile' do
+      expect { described_class.new(file_path).codec }
+        .to raise_error(MediaInfoAdapter::CorruptedFile).and output(/Corrupted metadata/).to_stdout
     end
   end
 end
