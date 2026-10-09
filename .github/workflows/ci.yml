@@ -29,6 +29,6 @@ jobs:
       - name: Set up videolib config
         run: cp videolib.yml ~/.videolib.yml
       - name: Run the script
-        run: ./videolib.rb
+        run: bundle exec ./videolib.rb
       - name: Check the report
         run: grep -q 'Scanned 1 shows with 2 episodes' report/index.html
