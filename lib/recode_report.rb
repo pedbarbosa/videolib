@@ -14,7 +14,9 @@ class RecodeReport
     total_count = total_size = 0
 
     @recode.each do |episode|
-      html_table += recode_row(episode) unless override_show?(episode[:show])
+      next if override_show?(episode[:show])
+
+      html_table += recode_row(episode)
       total_count += 1
       total_size += episode[:size]
     end
