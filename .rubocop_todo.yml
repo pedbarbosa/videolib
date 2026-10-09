@@ -6,16 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 2
-# Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
-Metrics/AbcSize:
-  Max: 57
-
-# Offense count: 4
-# Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
-Metrics/MethodLength:
-  Max: 34
-
 # Offense count: 3
 # Configuration parameters: IgnoredMetadata.
 RSpec/DescribeClass:

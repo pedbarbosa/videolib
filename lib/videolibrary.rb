@@ -18,19 +18,12 @@ class VideoLibrary
   end
 
   def scan
-    episodes = {}
     @new_scans = 0
     tv_shows = scan_tv_shows
     progressbar = progressbar_create('Scanning', tv_shows.count)
-    tv_shows.sort.each do |show|
+    episodes = tv_shows.sort.each_with_object({}) do |show, scanned|
       progressbar_update(progressbar, show)
-      show_episodes(show).each do |file_path|
-        scan_result = scan_media_if_new_or_changed(file_path, show)
-        unless scan_result.nil?
-          episodes[file_path.to_sym] = scan_result
-          write_temporary_cache(episodes)
-        end
-      end
+      scan_show(show, scanned)
     end
     progressbar.finish
     write_cache(episodes)
@@ -39,6 +32,16 @@ class VideoLibrary
   end
 
   private
+
+  def scan_show(show, episodes)
+    show_episodes(show).each do |file_path|
+      scan_result = scan_media_if_new_or_changed(file_path, show)
+      next if scan_result.nil?
+
+      episodes[file_path.to_sym] = scan_result
+      write_temporary_cache(episodes)
+    end
+  end
 
   def file_mtime_unchanged?(file_path, cached)
     File.mtime(file_path).to_i == cached.first['mtime']
