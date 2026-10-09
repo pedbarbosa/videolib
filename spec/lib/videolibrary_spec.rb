@@ -86,9 +86,12 @@ describe VideoLibrary do
                     'codec_override' => [])
     end
 
+    let!(:episodes) do
+      [add_file('Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv'),
+       add_file('Helix/Season 2/Helix - S02E13 - O Brave New World HDTV-720p.mkv')]
+    end
+
     before do
-      add_file('Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv')
-      add_file('Helix/Season 2/Helix - S02E13 - O Brave New World HDTV-720p.mkv')
       File.write("#{home}/.videolib.yml", config.to_yaml)
       allow(Dir).to receive(:home).and_return(home)
     end
@@ -97,10 +100,7 @@ describe VideoLibrary do
 
     it 'caches and reports the episodes in season folders', :aggregate_failures do
       expect { library.scan }.to output(/Scanned 1 shows with 2 episodes/).to_stdout
-      expect(read_json(config['json_file']).keys).to contain_exactly(
-        "#{scan_path}Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv",
-        "#{scan_path}Helix/Season 2/Helix - S02E13 - O Brave New World HDTV-720p.mkv"
-      )
+      expect(read_json(config['json_file']).keys).to match_array(episodes)
       expect(File.read(config['html_report'])).to include("<td class='left'>Helix</td>")
     end
   end
