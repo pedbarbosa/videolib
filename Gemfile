@@ -3,7 +3,6 @@
 source('https://rubygems.org')
 
 gem('json')
-gem('mediainfo')
 gem('ruby-progressbar')
 
 group :test do

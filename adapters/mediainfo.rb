@@ -1,33 +1,45 @@
 # frozen_string_literal: true
 
-require 'mediainfo'
+require 'json'
+require 'open3'
 
-# Adapter for MediaInfo
+# Adapter for the mediainfo CLI
 class MediaInfoAdapter
   def initialize(filename)
     @filename = filename
-    @media = MediaInfo.from(@filename)
+    tracks = read_tracks
+    @general = tracks.find { |track| track['@type'] == 'General' }
+    @video = tracks.find { |track| track['@type'] == 'Video' }
   end
 
   def codec
-    if @media.video.nil?
+    if @video.nil?
       puts "\nERROR: Corrupted metadata in file '#{@filename}', please check!"
       raise CorruptedFile
     end
 
-    @media.video.codecid
+    @video['Format']
   end
 
   def width
-    @media.video.width
+    Integer(@video['Width'], exception: false)
   end
 
   def height
-    @media.video.height
+    Integer(@video['Height'], exception: false)
   end
 
   def size
-    @media.general.filesize
+    @general['FileSize'].to_i
+  end
+
+  private
+
+  # Passing the arguments separately runs mediainfo without a shell, so file names need no escaping.
+  # Missing, unreadable and non-video files come back without a video track.
+  def read_tracks
+    output, = Open3.capture2('mediainfo', '--Output=JSON', @filename)
+    JSON.parse(output).dig('media', 'track') || []
   end
 
   class CorruptedFile < StandardError
