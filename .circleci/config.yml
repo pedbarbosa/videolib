@@ -14,8 +14,11 @@ jobs:
           name: Install gems
           command: bundle install
       - run:
-          name: Set up test directory
-          command: mkdir -p /tmp/video/TV
+          name: Set up test library with season folders
+          command: |
+            mkdir -p "/tmp/video/TV/Helix/Season 1" "/tmp/video/TV/Helix/Season 2"
+            cp spec/fixtures/sample.mkv "/tmp/video/TV/Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv"
+            cp spec/fixtures/sample.mkv "/tmp/video/TV/Helix/Season 2/Helix - S02E13 - O Brave New World HDTV-720p.mkv"
       - run:
           name: Run rake tests
           command: bundle exec rake
@@ -25,3 +28,6 @@ jobs:
       - run:
           name: Run the script
           command: ./videolib.rb
+      - run:
+          name: Check the report
+          command: grep -q 'Scanned 1 shows with 2 episodes' report/index.html

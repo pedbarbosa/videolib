@@ -19,11 +19,16 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: Set up test directory
-        run: mkdir -p /tmp/video/TV
+      - name: Set up test library with season folders
+        run: |
+          mkdir -p "/tmp/video/TV/Helix/Season 1" "/tmp/video/TV/Helix/Season 2"
+          cp spec/fixtures/sample.mkv "/tmp/video/TV/Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv"
+          cp spec/fixtures/sample.mkv "/tmp/video/TV/Helix/Season 2/Helix - S02E13 - O Brave New World HDTV-720p.mkv"
       - name: Run rake tests
         run: bundle exec rake
       - name: Set up videolib config
         run: cp videolib.yml ~/.videolib.yml
       - name: Run the script
         run: ./videolib.rb
+      - name: Check the report
+        run: grep -q 'Scanned 1 shows with 2 episodes' report/index.html
