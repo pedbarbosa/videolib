@@ -10,3 +10,9 @@ AllCops:
 
 Layout/LineLength:
   Max: 120
+
+# Spec files are named after the lib/adapters files, not the class names
+RSpec/SpecFilePathFormat:
+  CustomTransform:
+    MediaInfoAdapter: mediainfo
+    VideoLibrary: videolibrary

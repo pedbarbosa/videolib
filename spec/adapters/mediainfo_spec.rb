@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../sample_downloader'
+require 'tmpdir'
+require_relative '../media_sample'
 require_relative '../../adapters/mediainfo'
 
-# rubocop:disable Metrics/BlockLength
 describe MediaInfoAdapter do
   context 'with no input' do
     it 'fails and prints full message' do
@@ -11,9 +11,10 @@ describe MediaInfoAdapter do
     end
   end
 
-  context 'with an URL input' do
-    sample = media_sample
-    media = described_class.new('/tmp/videolib_sample.mkv')
+  context 'with a sample video' do
+    subject(:media) { described_class.new(MEDIA_SAMPLE_PATH) }
+
+    let(:sample) { media_sample }
 
     describe '::codec' do
       it 'returns the codec of the video' do
@@ -39,5 +40,16 @@ describe MediaInfoAdapter do
       end
     end
   end
+
+  context 'with a file that has no video track' do
+    let(:file_path) { File.join(Dir.mktmpdir, 'not_a_video.mkv') }
+
+    before { File.write(file_path, 'not a video') }
+    after { FileUtils.rm_rf(File.dirname(file_path)) }
+
+    it 'raises CorruptedFile' do
+      expect { described_class.new(file_path).codec }
+        .to raise_error(MediaInfoAdapter::CorruptedFile).and output(/Corrupted metadata/).to_stdout
+    end
+  end
 end
-# rubocop:enable Metrics/BlockLength

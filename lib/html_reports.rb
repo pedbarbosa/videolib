@@ -5,24 +5,22 @@ require 'erb'
 require_relative 'recode_report'
 require_relative '../lib/json_utils'
 
-def available_codecs
-  {
-    'HEVC' => 'x265',
-    'V_MPEGH/ISO/HEVC' => 'x265',
-    'hev1' => 'x265',
-    'hvc1' => 'x265',
-    'V_AV1' => 'x265',
-    'AVC' => 'x264',
-    'avc1' => 'x264',
-    'V_MPEG4/ISO/AVC' => 'x264',
-    'V_MS/VFW/FOURCC / DIVX' => 'x264',
-    'XVID' => 'mpeg'
-  }
-end
+AVAILABLE_CODECS = {
+  'HEVC' => 'x265',
+  'V_MPEGH/ISO/HEVC' => 'x265',
+  'hev1' => 'x265',
+  'hvc1' => 'x265',
+  'V_AV1' => 'x265',
+  'AVC' => 'x264',
+  'avc1' => 'x264',
+  'V_MPEG4/ISO/AVC' => 'x264',
+  'V_MS/VFW/FOURCC / DIVX' => 'x264',
+  'XVID' => 'mpeg'
+}.freeze
 
 def codec_badge(codec)
-  if available_codecs.include?(codec)
-    available_codecs[codec]
+  if AVAILABLE_CODECS.include?(codec)
+    AVAILABLE_CODECS[codec]
   elsif codec.include?('MPEG')
     'mpeg'
   else
@@ -31,7 +29,7 @@ def codec_badge(codec)
 end
 
 def track_resolution(height, filename)
-  raise InvalidHeight, "Invalid height for #{filename}" if height.nil?
+  return unknown_resolution(filename) if height.nil?
 
   case height
   when 0...640
@@ -41,8 +39,10 @@ def track_resolution(height, filename)
   else
     '1080p'
   end
-rescue InvalidHeight => e
-  puts "> #{e.message}, setting to 'SD'!"
+end
+
+def unknown_resolution(filename)
+  puts "> Invalid height for #{filename}, setting to 'SD'!"
   'sd'
 end
 
@@ -61,9 +61,11 @@ end
 
 def new_show
   [
-    'show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
-    'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
-    'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_sd' => 0
+    {
+      'show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
+      'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
+      'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_sd' => 0
+    }
   ]
 end
 
@@ -95,30 +97,50 @@ end
 
 def create_html_report
   episodes = read_json(@config['json_file'])
-  html_table = ''
-  recode = []
+  shows, recode = tally_shows(episodes)
+  html_table, total_x265, total_size = report_table(shows)
 
+  total_stats = report_summary(total_x265, episodes, shows, total_size)
+  write_html_report(html_table, total_stats)
+
+  return unless @config['recode_report']
+
+  recode_report = RecodeReport.new(config: @config, recode:)
+  recode_report.generate
+end
+
+def tally_shows(episodes)
   shows = {}
+  recode = []
   episodes.each do |file, episode|
-    show = episode.first['show']
-    shows[show] = new_show if shows[show].nil?
-    height = track_resolution(episode.first['height'], file)
-    size = episode.first['size']
-    codec = determine_or_override_codec_to_x265(episode)
-    mtime = Time.at(episode.first['mtime']).strftime('%Y-%m-%d %H:%M')
-
-    if codec == 'x265'
-      shows[show].first['x265_episodes'] += 1
-    else
-      recode << { file:, show:, codec:, height:, size:, mtime: }
-    end
-
-    format = show_format(codec, height)
-    increment_counters(shows[show], format, size)
+    show_counters = shows[episode.first['show']] ||= new_show
+    tally_episode(show_counters, recode, file, episode)
   rescue InvalidCodec
     puts "Invalid codec '#{episode.first['codec']}' detected on '#{file}'!"
   end
+  [shows, recode]
+end
 
+def tally_episode(show_counters, recode, file, episode)
+  height = track_resolution(episode.first['height'], file)
+  codec = determine_or_override_codec_to_x265(episode)
+
+  if codec == 'x265'
+    show_counters.first['x265_episodes'] += 1
+  else
+    recode << recode_entry(file, episode.first, codec, height)
+  end
+
+  increment_counters(show_counters, show_format(codec, height), episode.first['size'])
+end
+
+def recode_entry(file, details, codec, height)
+  mtime = Time.at(details['mtime']).strftime('%Y-%m-%d %H:%M')
+  { file:, show: details['show'], codec:, height:, size: details['size'], mtime: }
+end
+
+def report_table(shows)
+  html_table = ''
   total_x265 = total_size = 0
   shows.sort.each do |show, details|
     show_size = details.first['show_size'] / 1024 / 1024
@@ -126,15 +148,12 @@ def create_html_report
     total_x265 += details.first['x265_episodes']
     html_table += report_row(show, show_size, details.first)
   end
+  [html_table, total_x265, total_size]
+end
 
-  total_stats = report_summary(total_x265, episodes, shows, total_size)
+def write_html_report(html_table, total_stats)
   erb = ERB.new(File.read('templates/report.html.erb'))
   write_file(@config['html_report'], erb.result(binding))
-
-  return unless @config['recode_report']
-
-  recode_report = RecodeReport.new(config: @config, recode:)
-  recode_report.generate
 end
 
 def report_row(show, show_size, details)

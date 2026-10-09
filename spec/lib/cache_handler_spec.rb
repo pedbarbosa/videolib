@@ -4,6 +4,7 @@ require_relative '../../lib/cache_handler'
 
 class DummyClass
   include CacheHandler
+
   attr_accessor :config, :new_scans
 
   def initialize

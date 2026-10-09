@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install -y mediainfo
+      # Ruby version comes from .ruby-version; bundler-cache runs bundle install
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Set up test library with season folders
+        run: |
+          mkdir -p "/tmp/video/TV/Helix/Season 1" "/tmp/video/TV/Helix/Season 2"
+          cp spec/fixtures/sample.mkv "/tmp/video/TV/Helix/Season 1/Helix - S01E01 - Pilot HDTV-720p.mkv"
+          cp spec/fixtures/sample.mkv "/tmp/video/TV/Helix/Season 2/Helix - S02E13 - O Brave New World HDTV-720p.mkv"
+      - name: Run rake tests
+        run: bundle exec rake
+      - name: Set up videolib config
+        run: cp videolib.yml ~/.videolib.yml
+      - name: Run the script
+        run: bundle exec ./videolib.rb
+      - name: Check the report
+        run: grep -q 'Scanned 1 shows with 2 episodes' report/index.html
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Run RuboCop
+        run: bundle exec rubocop
