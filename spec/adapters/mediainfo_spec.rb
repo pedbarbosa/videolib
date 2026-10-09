@@ -11,8 +11,9 @@ describe MediaInfoAdapter do
   end
 
   context 'with a sample video' do
-    sample = media_sample
-    media = described_class.new(MEDIA_SAMPLE_PATH)
+    subject(:media) { described_class.new(MEDIA_SAMPLE_PATH) }
+
+    let(:sample) { media_sample }
 
     describe '::codec' do
       it 'returns the codec of the video' do

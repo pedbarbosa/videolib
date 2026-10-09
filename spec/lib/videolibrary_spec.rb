@@ -56,7 +56,7 @@ describe VideoLibrary do
 
     before { allow(MediaScanner).to receive(:new) }
 
-    it 'reuses the cache entry of an episode moved into a season folder' do
+    it 'reuses the cache entry of an episode moved into a season folder', :aggregate_failures do
       expect(library.send(:scan_media_if_new_or_changed, file_path, 'Helix')).to eq(cached)
       expect(MediaScanner).not_to have_received(:new)
     end

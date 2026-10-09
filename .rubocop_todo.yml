@@ -29,44 +29,6 @@ RSpec/DescribeClass:
     - 'spec/lib/html_reports_spec.rb'
     - 'spec/lib/json_utils_spec.rb'
 
-# Offense count: 2
-# Configuration parameters: CountAsOne.
-RSpec/ExampleLength:
-  Max: 12
-
-# Offense count: 3
-# Configuration parameters: AssignmentOnly.
-RSpec/InstanceVariable:
-  Exclude:
-    - 'spec/lib/html_reports_spec.rb'
-    - 'spec/lib/json_utils_spec.rb'
-
-# Offense count: 4
-RSpec/LeakyLocalVariable:
-  Exclude:
-    - 'spec/adapters/mediainfo_spec.rb'
-    - 'spec/lib/recode_report_spec.rb'
-
-# Offense count: 2
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: have_received, receive
-RSpec/MessageSpies:
-  Exclude:
-    - 'spec/adapters/progressbar_spec.rb'
-
-# Offense count: 9
-RSpec/MultipleExpectations:
-  Max: 5
-
-# Offense count: 2
-# Configuration parameters: CustomTransform, IgnoreMethods, IgnoreMetadata, InflectorPath, EnforcedInflector.
-# SupportedInflectors: default, active_support
-RSpec/SpecFilePathFormat:
-  Exclude:
-    - '**/spec/routing/**/*'
-    - 'spec/adapters/mediainfo_spec.rb'
-    - 'spec/lib/videolibrary_spec.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:

@@ -4,7 +4,7 @@ require_relative '../../adapters/progressbar'
 
 describe 'ProgressBar adapter functions' do
   describe '#progressbar_create' do
-    it 'creates a progress bar with the correct format and total, hides output' do
+    it 'creates a progress bar with the correct format and total, hides output', :aggregate_failures do
       progressbar = progressbar_create('Processing', 100, ProgressBar::Outputs::Null)
       expect(progressbar).to be_a(ProgressBar::Base)
       expect(progressbar.total).to eq(100)
@@ -33,10 +33,10 @@ describe 'ProgressBar adapter functions' do
       allow(progressbar).to receive(:increment)
     end
 
-    it 'updates the progress bar title and increments the progress' do
-      expect(progressbar).to receive(:title=).with("'A short title'          ")
-      expect(progressbar).to receive(:increment)
+    it 'updates the progress bar title and increments the progress', :aggregate_failures do
       progressbar_update(progressbar, 'A short title')
+      expect(progressbar).to have_received(:title=).with("'A short title'          ")
+      expect(progressbar).to have_received(:increment)
     end
   end
 end
