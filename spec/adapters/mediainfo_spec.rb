@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../sample_downloader'
+require_relative '../media_sample'
 require_relative '../../adapters/mediainfo'
 
 # rubocop:disable Metrics/BlockLength
@@ -11,9 +11,9 @@ describe MediaInfoAdapter do
     end
   end
 
-  context 'with an URL input' do
+  context 'with a sample video' do
     sample = media_sample
-    media = described_class.new('/tmp/videolib_sample.mkv')
+    media = described_class.new(MEDIA_SAMPLE_PATH)
 
     describe '::codec' do
       it 'returns the codec of the video' do

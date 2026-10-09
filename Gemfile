@@ -8,7 +8,6 @@ gem('ruby-progressbar')
 
 group :test do
   gem('codecov')
-  gem('down')
   gem('overcommit')
   gem('rake')
   gem('rspec')
