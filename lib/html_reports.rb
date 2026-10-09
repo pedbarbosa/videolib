@@ -5,20 +5,38 @@ require 'erb'
 require_relative 'recode_report'
 require_relative '../lib/json_utils'
 
+# Video formats as mediainfo reports them, and the codec IDs that older cache entries hold
 AVAILABLE_CODECS = {
+  # Formats
   'HEVC' => 'x265',
-  'V_MPEGH/ISO/HEVC' => 'x265',
-  'hev1' => 'x265',
-  'hvc1' => 'x265',
-  'V_AV1' => 'x265',
+  'AV1' => 'x265',
+  'VP9' => 'x265',
   'AVC' => 'x264',
-  'avc1' => 'x264',
+  # Matroska codec IDs
+  'V_MPEGH/ISO/HEVC' => 'x265',
+  'V_AV1' => 'x265',
+  'V_VP9' => 'x265',
   'V_MPEG4/ISO/AVC' => 'x264',
   'V_MS/VFW/FOURCC / DIVX' => 'x264',
+  # MP4 codec IDs
+  'hev1' => 'x265',
+  'hvc1' => 'x265',
+  'av01' => 'x265',
+  'vp09' => 'x265',
+  'avc1' => 'x264',
+  # MPEG-TS stream types
+  '36' => 'x265',
+  '27' => 'x264',
+  '1' => 'mpeg',
+  '2' => 'mpeg',
+  '16' => 'mpeg',
+  # AVI FourCCs
   'XVID' => 'mpeg'
 }.freeze
 
+# The mediainfo gem stored numeric codec IDs (MPEG-TS stream types) as integers, and some files have none
 def codec_badge(codec)
+  codec = codec.to_s
   if AVAILABLE_CODECS.include?(codec)
     AVAILABLE_CODECS[codec]
   elsif codec.include?('MPEG')

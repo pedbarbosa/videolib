@@ -33,8 +33,20 @@ describe 'lib/html_reports.rb' do
     expect(codec_badge('MPEG something')).to eql('mpeg')
   end
 
-  it 'fails if codec_badge is invalid' do
+  it 'outputs the codec_badge for AV1 and VP9 in any container', :aggregate_failures do
+    %w[AV1 V_AV1 av01 VP9 V_VP9 vp09].each { |codec| expect(codec_badge(codec)).to eql('x265') }
+  end
+
+  it 'outputs the codec_badge for the integer codec IDs of MPEG-TS files', :aggregate_failures do
+    expect(codec_badge(36)).to eql('x265')
+    expect(codec_badge(27)).to eql('x264')
+    expect(codec_badge(2)).to eql('mpeg')
+  end
+
+  it 'fails if codec_badge is invalid', :aggregate_failures do
     expect { codec_badge('123') }.to raise_error(InvalidCodec)
+    expect { codec_badge(123) }.to raise_error(InvalidCodec)
+    expect { codec_badge(nil) }.to raise_error(InvalidCodec)
   end
 
   it 'outputs the closest standard video resolution', :aggregate_failures do
