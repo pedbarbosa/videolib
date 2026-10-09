@@ -10,18 +10,10 @@ class RecodeReport
   end
 
   def generate
-    html_table = ''
-    total_count = total_size = 0
-
-    @recode.each do |episode|
-      next if override_show?(episode[:show])
-
-      html_table += recode_row(episode)
-      total_count += 1
-      total_size += episode[:size]
-    end
-
-    html_table += recode_totals(total_count, bytes_to_mb(total_size))
+    episodes = @recode.reject { |episode| override_show?(episode[:show]) }
+    total_size = episodes.sum { |episode| episode[:size] }
+    html_table = episodes.map { |episode| recode_row(episode) }.join
+    html_table += recode_totals(episodes.count, bytes_to_mb(total_size))
 
     recode_report = generate_html(html_table)
     write_file(@config['recode_report'], recode_report)
