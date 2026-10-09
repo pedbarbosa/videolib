@@ -50,17 +50,43 @@ describe 'lib/html_reports.rb' do
   end
 
   it 'outputs the closest standard video resolution', :aggregate_failures do
-    expect(track_resolution(nil, 'test')).to eql('sd')
-    expect(track_resolution(500, 'test')).to eql('sd')
-    expect(track_resolution(700, 'test')).to eql('720p')
-    expect(track_resolution(820, 'test')).to eql('1080p')
+    expect(track_resolution(720, 576, 'test')).to eql('sd')
+    expect(track_resolution(1280, 720, 'test')).to eql('720p')
+    expect(track_resolution(1920, 1080, 'test')).to eql('1080p')
+    expect(track_resolution(3840, 2160, 'test')).to eql('2160p')
+  end
+
+  it 'uses the width for widescreen video', :aggregate_failures do
+    expect(track_resolution(1280, 536, 'test')).to eql('720p')
+    expect(track_resolution(1920, 800, 'test')).to eql('1080p')
+    expect(track_resolution(3840, 1600, 'test')).to eql('2160p')
+  end
+
+  it 'uses the height for anamorphic video', :aggregate_failures do
+    expect(track_resolution(960, 720, 'test')).to eql('720p')
+    expect(track_resolution(1440, 1080, 'test')).to eql('1080p')
+  end
+
+  it 'defaults to SD when the resolution is unknown', :aggregate_failures do
+    expect(track_resolution(nil, nil, 'test')).to eql('sd')
+    expect($stdout).to have_received(:puts).with("> Invalid resolution for test, setting to 'SD'!")
   end
 
   it 'outputs the correct resolution for a preset badge', :aggregate_failures do
+    expect(episode_badge_test('x265_2160p', 'x264_2160p')).to eql('2160p')
     expect(episode_badge_test('x265_1080p', 'x264_1080p')).to eql('1080p')
-    expect(episode_badge_test('x265_720p', 'x264_720p')).to eql('720p')
+    expect(episode_badge_test('x265_720p', 'mpeg_720p')).to eql('720p')
     expect(episode_badge_test('x265_sd', 'x264_sd')).to eql('SD')
     expect(episode_badge_test('x264_720p', 'x264_sd')).to eql('Mix')
+  end
+
+  it 'has no badge for a show without counted episodes' do
+    expect(episode_badge(new_show.first)).to eql('-')
+  end
+
+  it 'counts every codec at every resolution', :aggregate_failures do
+    expect(new_show.first.keys).to include('x265_2160p', 'x264_2160p', 'mpeg_1080p', 'mpeg_720p', 'mpeg_sd')
+    expect { increment_counters(new_show, show_format('mpeg', '1080p'), 1) }.not_to raise_error
   end
 
   it 'increments the counter for a show' do

@@ -46,45 +46,43 @@ def codec_badge(codec)
   end
 end
 
-def track_resolution(height, filename)
-  return unknown_resolution(filename) if height.nil?
+CODEC_LABELS = { 'x265' => 'x265', 'x264' => 'x264', 'mpeg' => 'H.262' }.freeze
+RESOLUTION_LABELS = { '2160p' => '2160p', '1080p' => '1080p', '720p' => '720p', 'sd' => 'SD' }.freeze
 
-  case height
-  when 0...640
-    'sd'
-  when 640..800
-    '720p'
-  else
-    '1080p'
+# One report column per codec and resolution, e.g. 'x265_1080p' => 'x265 1080p'
+FORMAT_COLUMNS = CODEC_LABELS.flat_map do |codec, codec_label|
+  RESOLUTION_LABELS.map { |resolution, label| ["#{codec}_#{resolution}", "#{codec_label} #{label}"] }
+end.to_h.freeze
+
+# Minimum width or height for each resolution. Width catches widescreen crops (1920x800 is 1080p),
+# height catches anamorphic video (1440x1080 is 1080p)
+RESOLUTION_MINIMUMS = { '2160p' => [3200, 1800], '1080p' => [1700, 1000], '720p' => [1100, 700] }.freeze
+
+def track_resolution(width, height, filename)
+  return unknown_resolution(filename) if width.nil? && height.nil?
+
+  resolution, = RESOLUTION_MINIMUMS.find do |_, (min_width, min_height)|
+    width.to_i >= min_width || height.to_i >= min_height
   end
+  resolution || 'sd'
 end
 
 def unknown_resolution(filename)
-  puts "> Invalid height for #{filename}, setting to 'SD'!"
+  puts "> Invalid resolution for #{filename}, setting to 'SD'!"
   'sd'
 end
 
 def episode_badge(show)
-  case show['episodes']
-  when show['x265_1080p'] + show['x264_1080p']
-    '1080p'
-  when show['x265_720p'] + show['x264_720p']
-    '720p'
-  when show['x265_sd'] + show['x264_sd'] + show['mpeg_sd']
-    'SD'
-  else
-    'Mix'
+  return '-' if show['episodes'].zero?
+
+  resolution = RESOLUTION_LABELS.keys.find do |res|
+    CODEC_LABELS.keys.sum { |codec| show["#{codec}_#{res}"] } == show['episodes']
   end
+  resolution ? RESOLUTION_LABELS[resolution] : 'Mix'
 end
 
 def new_show
-  [
-    {
-      'show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0,
-      'x265_1080p' => 0, 'x265_720p' => 0, 'x265_sd' => 0,
-      'x264_1080p' => 0, 'x264_720p' => 0, 'x264_sd' => 0, 'mpeg_sd' => 0
-    }
-  ]
+  [{ 'show_size' => 0, 'episodes' => 0, 'x265_episodes' => 0 }.merge(FORMAT_COLUMNS.keys.to_h { |key| [key, 0] })]
 end
 
 def increment_counters(show, format, size)
@@ -140,7 +138,7 @@ def tally_shows(episodes)
 end
 
 def tally_episode(show_counters, recode, file, episode)
-  height = track_resolution(episode.first['height'], file)
+  height = track_resolution(episode.first['width'], episode.first['height'], file)
   codec = determine_or_override_codec_to_x265(episode)
 
   if codec == 'x265'
