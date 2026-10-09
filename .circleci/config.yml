@@ -1,20 +1,15 @@
 version: 2.1
-orbs:
-  ruby: circleci/ruby@2.0.0
 
 jobs:
   build:
     docker:
-      - image: cimg/ruby:3.2.1
-    executor: ruby/default
+      # Keep in sync with .ruby-version
+      - image: cimg/ruby:4.0.7
     steps:
       - checkout
       - run:
           name: Install packages
-          command: sudo apt update && sudo apt install mediainfo
-      - run:
-          name: Install bundler
-          command: gem install bundler
+          command: sudo apt-get update && sudo apt-get install -y mediainfo
       - run:
           name: Install gems
           command: bundle install
