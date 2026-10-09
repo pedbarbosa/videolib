@@ -3,7 +3,8 @@
 require 'simplecov'
 SimpleCov.start
 
-if ENV['CI'] == 'true'
+# The codecov gem's upload only works from CircleCI, it crashes on GitHub Actions
+if ENV['CIRCLECI'] == 'true'
   require 'codecov'
   SimpleCov.formatter = SimpleCov::Formatter::Codecov
 end
