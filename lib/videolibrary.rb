@@ -40,12 +40,18 @@ class VideoLibrary
 
   private
 
-  def file_mtime_unchanged?(file_path)
-    File.mtime(file_path).to_i == @cache[file_path].first['mtime']
+  def file_mtime_unchanged?(file_path, cached)
+    File.mtime(file_path).to_i == cached.first['mtime']
   end
 
-  def file_size_unchanged?(file_path)
-    File.size(file_path) == @cache[file_path].first['size']
+  def file_size_unchanged?(file_path, cached)
+    File.size(file_path) == cached.first['size']
+  end
+
+  # Episodes moved into a season folder keep their cache entry, matched on show and file name
+  def cached_episode(file_path, show)
+    @cache_by_show_and_file ||= @cache.to_h { |path, episode| [[episode.first['show'], File.basename(path)], episode] }
+    @cache[file_path] || @cache_by_show_and_file[[show, File.basename(file_path)]]
   end
 
   def scan_new_or_changed_media(file_path, show)
@@ -59,9 +65,10 @@ class VideoLibrary
   end
 
   def scan_media_if_new_or_changed(file_path, show)
-    if @cache[file_path] && file_size_unchanged?(file_path) && file_mtime_unchanged?(file_path)
+    cached = cached_episode(file_path, show)
+    if cached && file_size_unchanged?(file_path, cached) && file_mtime_unchanged?(file_path, cached)
       puts "File '#{file_path}' hasn't changed" if @config['debug']
-      @cache[file_path]
+      cached
     else
       puts "File '#{file_path}' is new or has changed, scanning ..." if @config['debug']
       scan_new_or_changed_media(file_path, show)
