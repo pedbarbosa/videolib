@@ -66,6 +66,22 @@ describe VideoLibrary do
       allow(MediaScanner).to receive(:new).and_return(instance_double(MediaScanner, scan_media_file: [media_sample]))
       expect(library.send(:scan_media_if_new_or_changed, file_path, 'Helix')).to eq([media_sample])
     end
+
+    context 'with debug on' do
+      let(:config) { super().merge('debug' => true) }
+
+      it 'says when a file has not changed' do
+        expect { library.send(:scan_media_if_new_or_changed, file_path, 'Helix') }
+          .to output(/hasn't changed/).to_stdout
+      end
+
+      it 'says when a file is scanned' do
+        cached.first['size'] += 1
+        allow(MediaScanner).to receive(:new).and_return(instance_double(MediaScanner, scan_media_file: [media_sample]))
+        expect { library.send(:scan_media_if_new_or_changed, file_path, 'Helix') }
+          .to output(/is new or has changed.*Scanning/m).to_stdout
+      end
+    end
   end
 
   describe '#scan_new_or_changed_media' do
@@ -102,6 +118,12 @@ describe VideoLibrary do
       expect { library.scan }.to output(/Scanned 1 shows with 2 episodes/).to_stdout
       expect(read_json(config['json_file']).keys).to match_array(episodes)
       expect(File.read(config['html_report'])).to include("<td class='left'>Helix</td>")
+    end
+
+    it 'leaves corrupted files out of the cache', :aggregate_failures do
+      File.write(add_file('Helix/Season 1/Helix - S01E02 - Broken HDTV-720p.mkv'), 'not a video')
+      expect { library.scan }.to output(/seems corrupted/).to_stdout
+      expect(read_json(config['json_file']).keys).to match_array(episodes)
     end
   end
 
