@@ -9,6 +9,11 @@ describe 'ProgressBar adapter functions' do
       expect(progressbar).to be_a(ProgressBar::Base)
       expect(progressbar.total).to eq(100)
     end
+
+    it 'redraws on every update, so the title shown is the show being scanned' do
+      progressbar = progressbar_create('Processing', 100, ProgressBar::Outputs::Null)
+      expect(progressbar.to_h['throttle_rate']).to eq(0)
+    end
   end
 
   describe '#progressbar_title' do
