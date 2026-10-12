@@ -41,6 +41,24 @@ describe MediaInfoAdapter do
     end
   end
 
+  context 'with shell characters in the file name' do
+    let(:file_path) { File.join(Dir.mktmpdir, %q(Show's "Pilot" $(echo x) `id`.mkv)) }
+
+    before { FileUtils.cp(MEDIA_SAMPLE_PATH, file_path) }
+    after { FileUtils.rm_rf(File.dirname(file_path)) }
+
+    it 'reads the video' do
+      expect(described_class.new(file_path).codec).to eq media_sample[:codec]
+    end
+  end
+
+  context 'with a missing file' do
+    it 'raises CorruptedFile' do
+      expect { described_class.new('/nonexistent/episode.mkv').codec }
+        .to raise_error(MediaInfoAdapter::CorruptedFile).and output(/Corrupted metadata/).to_stdout
+    end
+  end
+
   context 'with a file that has no video track' do
     let(:file_path) { File.join(Dir.mktmpdir, 'not_a_video.mkv') }
 

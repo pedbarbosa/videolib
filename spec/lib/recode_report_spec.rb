@@ -8,14 +8,11 @@ describe RecodeReport do
   let(:recode_report) { '/tmp/videolib_test.html' }
   let(:params) do
     {
-      config: {
-        'copy_override' => ['abc'],
-        'recode_report' => recode_report,
-        'recode_cp_target' => '/foo'
-      },
+      config: { 'copy_override' => ['Skipped'], 'recode_report' => recode_report },
       recode: [
-        { file: 'a.mkv', size: 123 },
-        { file: 'b.mkv', size: 456 }
+        { file: 'a.mkv', show: 'Listed', size: 2 * 1024 * 1024 },
+        { file: 'b.mkv', show: 'Listed', size: 3 * 1024 * 1024 },
+        { file: 'c.mkv', show: 'Skipped', size: 7 * 1024 * 1024 }
       ]
     }
   end
@@ -26,5 +23,12 @@ describe RecodeReport do
 
   describe 'try to generate a report' do
     it { expect(test.generate).to eq ["#{recode_report}.tmp"] }
+
+    it 'leaves copy_override shows out of the rows and the totals', :aggregate_failures do
+      test.generate
+      report = File.read(recode_report)
+      expect(report).to include('a.mkv', 'b.mkv', '2 file(s)', '<td class="right">5</td>')
+      expect(report).not_to include('c.mkv')
+    end
   end
 end

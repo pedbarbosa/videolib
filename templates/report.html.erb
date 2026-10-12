@@ -50,13 +50,9 @@
     <th class="sorttable_nosort">Conversion progress</th>
     <th>Ep #</th>
     <th>Qual</th>
-    <th>x265 1080p
-    <th>x265 720p</th>
-    <th>x265 SD</th>
-    <th>x264 1080p</th>
-    <th>x264 720p</th>
-    <th>x264 SD</th>
-    <th>H.262 SD</th>
+<% FORMAT_COLUMNS.each_value do |label| %>
+    <th><%= label %></th>
+<% end %>
   </tr>
   <%= html_table %>
 </table>

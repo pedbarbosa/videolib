@@ -3,11 +3,14 @@
 require 'ruby-progressbar'
 require 'ruby-progressbar/outputs/null'
 
+# No throttling: cached shows finish in under the default 10ms, which would leave a
+# previous show's title on screen while a new episode is being scanned
 def progressbar_create(operation, total, output = $stdout)
   ProgressBar.create(format: "#{operation} %t |%b>%i| %c/%C",
                      title: '...                      ',
                      starting_at: 0,
                      total:,
+                     throttle_rate: 0,
                      output:)
 end
 

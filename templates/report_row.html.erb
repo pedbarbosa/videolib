@@ -4,11 +4,7 @@
   <td class='center'><progress max="<%= details['episodes'] %>" value="<%= details['x265_episodes'] %>"></progress></td>
   <td><%= details['episodes'] %></td>
   <td><%= episode_badge(details) %></td>
-  <td><%= details['x265_1080p'] %></td>
-  <td><%= details['x265_720p'] %></td>
-  <td><%= details['x265_sd'] %></td>
-  <td><%= details['x264_1080p'] %></td>
-  <td><%= details['x264_720p'] %></td>
-  <td><%= details['x264_sd'] %></td>
-  <td><%= details['mpeg_sd'] %></td>
+<% FORMAT_COLUMNS.each_key do |column| %>
+  <td><%= details[column] %></td>
+<% end %>
 </tr>
